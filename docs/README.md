@@ -299,10 +299,9 @@ aliceApp.connect(bobApp.address(), async (err, bobApi) => {
   console.log(await bobApi.example.hello("world"));
   // Hello world! My name is Bob.
 
-  aliceApp.close()
-  bobApp.close()
+  aliceApp.close();
+  bobApp.close();
 });
-
 ```
 
 ## Multiserver
