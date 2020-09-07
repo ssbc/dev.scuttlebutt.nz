@@ -1,5 +1,4 @@
-# SSB-JS Handbook
+# dev.scuttlebutt.nz
 
-Meta documentation for SSB-JS modules.
+Meta documentation for the scuttlebutt ecosystem
 
-<https://christianbundy.github.io/ssb-js-handbook>
