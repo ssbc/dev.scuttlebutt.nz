@@ -2,20 +2,77 @@
 
 ## Almost always used
 
-- ssb-db
-- ssb-master
 - ssb-backlinks
-- ssb-query
+- ssb-blobs
+- ssb-db
 - ssb-friends
+- ssb-gossip
+- ssb-logging
+- ssb-master
+- ssb-no-auth
+- ssb-query
 - ssb-replicate
-- ...
+- ssb-unix-socket
 
 ## Often used
 
+- ssb-about
 - ssb-conn
 - ssb-ebt
-- ...
+- ssb-lan
+- ssb-links
+- ssb-local
+- ssb-onion
+- ssb-ooo
+- ssb-plugins
+- ssb-private
+- ssb-search
+- ssb-suggest
+- ssb-ws
 
+## Sometimes used
+
+- ssb-blobs-purge
+- ssb-contacts
+- ssb-device-address
+- ssb-dht-invite
+- ssb-friend-pub
+- ssb-identities
+- ssb-incoming-guard
+- ssb-invite-client
+- ssb-meme
+- ssb-names
+- ssb-notifier
+- ssb-peer-invites
+- ssb-private-groups
+- ssb-publishguard
+- ssb-room
+- ssb-serve-blobs
+- ssb-server-channel
+- ssb-tags
+- ssb-threads
+- ssb-unread
+
+## Application-specific
+
+- git-ssb-web
+- patchfoo
+- smtp-ssb
+- ssb-activity
+- ssb-autoname
+- ssb-chess-db
+- ssb-dns
+- ssb-ebt-and-onboarding-only
+- ssb-ebt-fork-staltz
+- ssb-exec
+- ssb-gitindex
+- ssb-invites-store
+- ssb-npm-registry
+- ssb-repl
+- ssb-server-ticktack
+- ssb-talequery
+- ssb-viewer
 
 ## Deprecated
 
+- ssb-fulltext
