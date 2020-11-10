@@ -42,7 +42,7 @@ They also implement other sub-protocols like ssb-blobs.
 * publish - exposes `sbot.PublishLog.Publish(...)` as the muxrpc async call `publish`
 * get - very short module, just exposes [sbot.Get](https://pkg.go.dev/go.cryptoscope.co/ssb/sbot#Sbot.Get) over muxrpc
 * rawread - a bunch of _read messages from the Receive Log_ functions likes (`createLogStream` and `messagesByType`)
-* legacyinvites - the first invite system [ssb-invite](https://github.com/ssbc/ssb-invite/)
+* legacyinvites -  follow-back sub protocol for new users. [ssb-invite](https://github.com/ssbc/ssb-invite)
 * peerinvites - the server part of the newer invite system: [ssb-peer-invites](https://github.com/ssbc/ssb-peer-invites)
 * private - about to be deprecated way of accessing private messages
 * friends - supplies some of [ssb-friends](https://github.com/ssbc/ssb-friends), namly `isFollowing`, `isBlocking` and `hops` but not `hopStream`, `onEdge` or `createLayer`.
@@ -60,26 +60,49 @@ They also implement other sub-protocols like ssb-blobs.
 
 ### Sbot
 
-TODO
+This package ties together network, repo and plugins like graph and blobs into a large server that offers data-access APIs
+and background replication. It's name dates back to a time where ssb-server was still called scuttlebot, in short: sbot.
+
+It offers a flexible [functional options API](https://pkg.go.dev/go.cryptoscope.co/ssb/sbot#Option) to tune the server as desired. This includes file locations, network and signing keypairs, local discovery behavior and plugin selection.
+
+For instance, if you wanted a bot with local disvery enabled (by default it's off) and the replication database on an custom mountpoint, you would do this:
+
+```go
+import "go.cryptoscope.co/ssb/sbot"
+
+func ex() {
+  thebot, err := sbot.Sbot(
+    sbot.WithRepoPath("/mnt/external/my-go-ssb-db"),
+    sbot.EnableAdvertismentBroadcasts(true), // send your own location and ID
+    sbot.EnableAdvertismentDialing(true),    // connect to others
+  )
+  check(err)
+
+  ctx:=context.Background()
+  for { // handshake errors can make serve return, better keep serving
+    err=thebot.Serve(ctx)
+    if err!=nil {
+      log.Println("handshake failed:", err)
+    }
+  }
+}
+```
 
 
 ### Repo, indexes and multilogs
 
-TODO
+* repo - contains utility modules to open offset logs and create different kinds of indexes
+* indexes - contains functions to create indexing  for `get(%ref) -> message`. Also contains a utility to open the contact trust graph using the `repo` and `graph` packages.
+* multilogs - currently contains the indexing functions for the `by user` and `private readable` multilogs (See the _MultiLog_ section in _Database concept overview_ for more)
 
-### Random
+### Misc
 
-TODO
-
-* keys
-* blobstore
-* network
-* graph
-* client
-* invite
-* private
-* private/box2
-* private/box
+* [blobstore](https://pkg.go.dev/go.cryptoscope.co/ssb/blobstore) - the filesystem storage and simpathy managment for [ssb-blobs](https://github.com/ssbc/ssb-blobs)
+* network - a utility module for dialing and listening to secret-handshake powered muxrpc connections
+* [graph](https://pkg.go.dev/go.cryptoscope.co/ssb/graph) - derives trust/block relations by consuming type:contact message and offers lookup APIs between two feeds.
+* [client](https://pkg.go.dev/go.cryptoscope.co/ssb/client) - a simple muxrpc interface to common ssb methods, similar to [ssb-client](https://github.com/ssbc/ssb-client)
+* [invite](https://pkg.go.dev/go.cryptoscope.co/ssb/invite) - This package contains functions for parsing invite codes and dialing a pub as a guest to redeem a token. The muxrpc handlers and storage are found in `plugins/legacyinvite`.
+* [private](https://pkg.go.dev/go.cryptoscope.co/ssb/private) - utility functions to de- and encrypted messages. Maps to `box()` and `unbox()` in [ssb-keys](https://github.com/ssbc/ssb-keys).
 
 ### Tests
 
