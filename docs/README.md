@@ -16,16 +16,6 @@ You should be familiar with JavaScript, Node.js, and at least the basics mention
 
 ## Implementations
 
-### node.js
-
-The original implementation
-[node.js](javascript/)
-
-### golang
-
-[golan](golan/)
-
-### rust
-
-There are several rust implementations
-[rust](rust/)
+* The original implementation in [node.js](javascript/).
+* There also is fairly complete implementation in [Go](golang/).
+* There are several rust implementations [rust](rust/), too.
