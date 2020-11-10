@@ -180,3 +180,11 @@ Here are modules/packages that are not part of the core mono repository:
 * [pull-stream](https://pull-stream.github.io)-like abstraction (called [luigi](https://godoc.org/go.cryptoscope.co/luigi)) to pipe between rpc and database.
 * [go ssb-refs](https://godoc.org/go.mindeco.de/ssb-refs) utility types and parsing for message and feed identtifers.
 * [go ssb-multiserver](https://godoc.org/go.mindeco.de/ssb-multiserver) [address](https://github.com/ssbc/multiserver-address) parsing.
+
+## Contact
+
+go-ssb and the surrounding modules were built by @cryptix with support from @keks.
+To reach us either post to the #go-ssb channel on the ssb mainnet or mention us individually:
+
+* cryptix: `@p13zSAiOpguI9nsawkGijsnMfWmFd5rlUNpzekEE+vI=.ed25519`
+* keks: `@YXkE3TikkY4GFMX3lzXUllRkNTbj5E+604AkaO1xbz8=.ed25519`
