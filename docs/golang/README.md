@@ -2,7 +2,7 @@
 
 ## Introdcution
 
-Go-SSB implements most of the existing javascript functionallity but is less modular, due to the typed nautre of the language. Most of the code lives in a single repository: [go-ssb](https://https://github.com/cryptoscope/ssb) with a couple of packages split out, like `go-muxrpc` and `secretstream`.
+Go-SSB implements most of the existing javascript functionallity but is less modular, due to the typed nature of the language. Most of the code lives in a single repository: [go-ssb](https://https://github.com/cryptoscope/ssb) with a couple of packages split out, like `go-muxrpc` and `secretstream`.
 
 The import path for the code is `go.cryptoscope.co/ssb`.
 
@@ -26,8 +26,8 @@ Message contains all the code to create and verify messages.
 
 The current established format is
 
-* message - abstract verification and publish helpers
-* message/legacy - how to encode and verify a ssb-v1 message
+* [message](https://pkg.go.dev/go.cryptoscope.co/ssb/message) - abstract verification and publish helpers
+* [message/legacy](https://pkg.go.dev/go.cryptoscope.co/ssb/message/legacy) - how to encode and verify [the current ssb messages](https://spec.scuttlebutt.nz/feed/messages.html)
 * message/multimsg - encoding multiple kinds of messages to disk (see _Database Concept Overview_ below)
 
 ### Plugins
@@ -35,8 +35,8 @@ The current established format is
 Plugins supply muxrpc handlers to query the database in certain ways.
 They also implement other sub-protocols like ssb-blobs.
 
-* gossip - implements the `createHistoryStream` muxrpc call. _Legacy_ (non-EBT) Replication of how to fetch a bunch of feeds is found here.
-* replicate - roughly translates to [ssb-replicate](https://github.com/ssbc/ssb-replicate), controlls which feeds to fetch
+* gossip - implements the `createHistoryStream` muxrpc call. _Legacy_ (non-EBT) Replication of fetching and verifying the selected feeds is found here.
+* replicate - roughly translates to [ssb-replicate](https://github.com/ssbc/ssb-replicate) and only selects _which_ feeds to block and fetch.
 * control - connect to remote peers. (a naming hack, supplies `ctrl.connect` which should actually be `gossip.connect`)
 * status - return some information about the running server (number of connected peers, number of messages, index state)
 * publish - exposes `sbot.PublishLog.Publish(...)` as the muxrpc async call `publish`
@@ -45,7 +45,7 @@ They also implement other sub-protocols like ssb-blobs.
 * legacyinvites - the first invite system [ssb-invite](https://github.com/ssbc/ssb-invite/)
 * peerinvites - the server part of the newer invite system: [ssb-peer-invites](https://github.com/ssbc/ssb-peer-invites)
 * private - about to be deprecated way of accessing private messages
-* friends - supplies some of [ssb-friends](https://github.com/ssbc/ssb-friends)
+* friends - supplies some of [ssb-friends](https://github.com/ssbc/ssb-friends), namly `isFollowing`, `isBlocking` and `hops` but not `hopStream`, `onEdge` or `createLayer`.
 * whoami - returns the public key reference of the peer you are talking to.
 * blobs - the muxrpc handlers for [ssb-blobs](https://github.com/ssbc/ssb-blobs). The storage and want-managment is found in `blobstore`.
 
@@ -88,7 +88,7 @@ contains sepcial code to run tests against the javascript implementation.
 
 ## Database concept Overview
 
-Go-SSB's choice of data storage and retreival is very much inspired by ssb-db / flumedb.
+Go-SSB's choice of data storage and retrieval is very much inspired by ssb-db / flumedb.
 
 A big part of working with ssb means dealing with append-only logs.
 The current abstracted interface is implemented in [margaret.Log](https://pkg.go.dev/go.cryptoscope.co/margaret@v0.1.6#Log).
@@ -105,13 +105,13 @@ The main message storage is an _offset log_, implemented in [margaret/offset2](h
 
 Since go-ssb also not only supports the json-based feed format but also [gabbygrove](https://pkg.go.dev/go.mindeco.de/ssb-gabbygrove?tab=overview), the [multimsg package](https://pkg.go.dev/go.cryptoscope.co/ssb@v0.0.0-20201008153016-a00fdfeccb87/message/multimsg) is used to support both and more in the future.
 
-(`*`): It's not strictly _append-only_ since it's also supported to null an entry with zeros or overwrite it with something of equal size (or smaller), which is usefull for formats which support content deletion.
+(`*`): It's not strictly _append-only_ since it's also supported to null an entry with zeros or overwrite it with something of equal size (or smaller), which is useful for formats which support content deletion.
 
 ### Reduce indexes
 
 The `graph` and `plugins2/names` packages show examples of indexes that boil down all the messages to a reduced state.
 
-The `graph` package goes through all the `type:contact` messages and just stores the latest information for each pair of author and (un)followed or (un)blocked contact. This information can then directly be used by `plugins/friends` to anser muxrpc `friends.isFollowing` call's or in aggretate to build the whole trust graph for range lookups (hops between A and B) or the set of feeds that should be fetched.
+The `graph` package goes through all the `type:contact` messages and just stores the latest information for each pair of author and (un)followed or (un)blocked contact. This information can then directly be used by `plugins/friends` to answer muxrpc `friends.isFollowing` call's or in aggretate to build the whole trust graph for range lookups (hops between A and B) or the set of feeds that should be fetched.
 
 The `plugins2/names` package implements the same muxrpc interface as [ssb-names](https://github.com/ssbc/ssb-names). It does a similar thing to `graph` but for `type:about` messages and the name, image and description information in them.
 
