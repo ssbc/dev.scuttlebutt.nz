@@ -18,14 +18,13 @@ use kuska_ssb::keystore::OwnedIdentity;
 The most basic operation is generating keys: this produces an identity `struct` of type `OwnedIdentity`. We'll call this identity **Ayami**.
 
 ```rust
-let ayami = OwnedIdentity::create();
 // struct OwnedIdentity {
 //     id: String,
 //     pk: ed25519::PublicKey,
 //     sk: ed25519::SecretKey,
 // }
 
-println!("{:#?}", ayami);
+let ayami = OwnedIdentity::create();
 // OwnedIdentity {
 //     id: "@/aCKS2hXOE1PbzwOThkXumZF3+Jlka6FBkQrln0EewI=.ed25519",
 //     pk: PublicKey([253, 160, 138, 75, 104, 87, 56, 77, 79, 111, 60, 14, 78, 25, 23, 186, 102, 69, 223, 226, 101, 145, 174, 133, 6, 68, 43, 150, 125, 4, 123, 2]),
@@ -48,6 +47,42 @@ let mut file = File::create("bongani").await?;
 
 // write identity to file
 keystore::write_patchwork_config(&bongani, &mut file).await.expect("write local secret");
+```
+
+## Signing
+
+The most common operation with our keys is signing objects and then verifying their signatures. SSB has a very specific message encoding format, but for this example we'll use an example object.
+
+```rust
+// create an example object with json encoding (using serde_json)
+let example_object = json!({ "type": "example" });
+```
+
+We'll use Ayami's private key to sign this object.
+
+```rust
+use kuska_ssb::feed::Message;
+
+// returns a `Result<Message>`
+let signed_object = Message::sign(None, &ayami, example_object);
+```
+
+The `Message` struct implements various convenience methods for retrieving data. For example, we can retrieve the contents and signature of the Message.
+
+```rust
+let object = signed_object.unwrap();
+
+object.content();
+// Object(
+//     {
+//         "type": String(
+//             "example",
+//         ),
+//     },
+// )
+
+object.signature();
+// "Ya6RkIDJDRh7UE1tJlpJ7AlpcEVeMjjmEzCm3WCy4dHWJysGYJS5dkWvsJ3xphXrVE61Yqv+dXNPLv8ypzpiAg==.sig.ed25519"
 ```
 
 ## Contact
