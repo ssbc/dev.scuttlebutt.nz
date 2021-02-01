@@ -6,6 +6,50 @@
 
 If you are not familiar with the [Rust programming language](https://www.rust-lang.org/), please visit the [Getting started](https://www.rust-lang.org/learn/get-started) page to learn more. The [Rust programming language book](https://doc.rust-lang.org/book/) and [Rust By Example](https://doc.rust-lang.org/stable/rust-by-example/) are both excellent learning guides.
 
+## Keystore
+
+The [keystore modules](https://github.com/Kuska-ssb/ssb/tree/master/src/keystore) are used to create, load, read and write SSB keys.
+
+```rust
+use kuska_ssb::keystore;
+use kuska_ssb::keystore::OwnedIdentity;
+```
+
+The most basic operation is generating keys: this produces an identity `struct` of type `OwnedIdentity`. We'll call this identity **Ayami**.
+
+```rust
+let ayami = OwnedIdentity::create();
+// struct OwnedIdentity {
+//     id: String,
+//     pk: ed25519::PublicKey,
+//     sk: ed25519::SecretKey,
+// }
+
+println!("{:#?}", ayami);
+// OwnedIdentity {
+//     id: "@/aCKS2hXOE1PbzwOThkXumZF3+Jlka6FBkQrln0EewI=.ed25519",
+//     pk: PublicKey([253, 160, 138, 75, 104, 87, 56, 77, 79, 111, 60, 14, 78, 25, 23, 186, 102, 69, 223, 226, 101, 145, 174, 133, 6, 68, 43, 150, 125, 4, 123, 2]),
+//     sk: SecretKey(****),
+// }
+```
+
+Alternatively, we can load or create a key that's saved in a file. These methods allow compatibility with keyfiles conforming to the Javascript implementation. Loading the local secret produces an identity `struct` of type `OwnedIdentity`. We'll call this identity **Bongani**.
+
+```rust
+// read from "{}/.ssb/secret" where "{}" is home directory
+let bongani = keystore::from_patchwork_local().await.expect("read local secret");
+```
+
+We can also write this identity to file:
+
+```rust
+// create test file for storing keys
+let mut file = File::create("bongani").await?;
+
+// write identity to file
+keystore::write_patchwork_config(&bongani, &mut file).await.expect("write local secret");
+```
+
 ## Contact
 
 Kuska-ssb was written by [@adria0](https://github.com/adria0) with cryptographic support from [@Dhole](https://github.com/Dhole). This documentation was compiled by [@glyph](https://github.com/mycognosist). All three can be found in the Scuttleverse:
