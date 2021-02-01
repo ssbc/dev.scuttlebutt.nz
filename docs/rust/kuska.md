@@ -49,7 +49,7 @@ let mut file = File::create("bongani").await?;
 keystore::write_patchwork_config(&bongani, &mut file).await.expect("write local secret");
 ```
 
-## Signing
+### Signing
 
 The most common operation with our keys is signing objects and then verifying their signatures. SSB has a very specific message encoding format, but for this example we'll use an example object.
 
@@ -84,6 +84,23 @@ object.content();
 object.signature();
 // "Ya6RkIDJDRh7UE1tJlpJ7AlpcEVeMjjmEzCm3WCy4dHWJysGYJS5dkWvsJ3xphXrVE61Yqv+dXNPLv8ypzpiAg==.sig.ed25519"
 ```
+
+### Verification
+
+Unlike the Javascript implementation, Kuska-ssb does not expose a standalone method for verifying a signed object. However, the `Message` struct does include a `from_value` method which takes a JSON object, checks for the required fields and verifies the signature.
+
+```rust
+Message::from_value(object)?;
+```
+
+In the case of an error, an `Error` enum is returned which defines the cause of the error. Example errors include:
+
+```rust
+Error::InvalidJson
+Error::InvalidSignature
+```
+
+See [`src/feed/error.rs`](https://github.com/Kuska-ssb/ssb/blob/90017a31fa8789e548347bb205e96be8fc9351c7/src/feed/error.rs) for the complete `Error` listing.
 
 ## Contact
 
