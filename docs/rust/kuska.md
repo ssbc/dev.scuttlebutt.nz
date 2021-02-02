@@ -116,6 +116,10 @@ See [`src/feed/error.rs`](https://github.com/Kuska-ssb/ssb/blob/90017a31fa8789e5
 
 The cryptographic functionality of Kuska-ssb is provided by a fork of [sodiumoxide](https://github.com/Kuska-ssb/sodiumoxide), a type-safe and efficient Rust binding for libsodium. The best way to understand this API is to read the [crate documentation](https://docs.rs/sodiumoxide/0.2.6/sodiumoxide/). Of particular interest is the [documentation of the crypto module](https://docs.rs/sodiumoxide/0.2.6/sodiumoxide/crypto/index.html), which contains the cryptography methods that form the basis of the [sodium.rs crypto module](https://github.com/Kuska-ssb/ssb/blob/master/src/crypto/sodium.rs), [message module](https://github.com/Kuska-ssb/ssb/blob/master/src/feed/message.rs) and others.
 
+## TODO
+
+Feeds. Peers. Replication. etc.
+
 ## Contact
 
 Kuska-ssb was written by [@adria0](https://github.com/adria0) with cryptographic support from [@Dhole](https://github.com/Dhole). This documentation was compiled by [@glyph](https://github.com/mycognosist). All three can be found in the Scuttleverse:
