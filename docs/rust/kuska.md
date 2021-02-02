@@ -87,10 +87,20 @@ object.signature();
 
 ### Verification
 
-Unlike the Javascript implementation, Kuska-ssb does not expose a standalone method for verifying a signed object. However, the `Message` struct does include a `from_value` method which takes a JSON object, checks for the required fields and verifies the signature.
+In order to verify a signed object, Kuska-ssb implements a `from_value` method on the `Message` struct. The method takes a single argument in the form of a JSON object. The first action performed by the method is to verify that each of the required message fields exists and that the type of the value for each field is correct. Checked fields include: `previous`, `sequence`, `timestamp`, `hash` and `content`.
+
+The `signature` and `author` fields are then checked before the signature is verified.
 
 ```rust
 Message::from_value(object)?;
+```
+
+In the case of a successful validation, an `Ok` `Result` type is returned with contents of type `Message`:
+
+```rust
+Ok(Message {
+    value: Value::Object(v),
+})
 ```
 
 In the case of an error, an `Error` enum is returned which defines the cause of the error. Example errors include:
