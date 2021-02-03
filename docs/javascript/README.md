@@ -19,7 +19,7 @@ The [SSB-Keys](https://github.com/ssb-js/ssb-keys/) is used to manage keys and p
 const ssbKeys = require("ssb-keys");
 ```
 
-The most basic operationg is generating keys: this produces an identity encoded as an object. We'll call this identity **Alice**.
+The most basic operation is generating keys: this produces an identity encoded as an object. We'll call this identity **Alice**.
 
 ```javascript
 const alice = ssbKeys.generate();

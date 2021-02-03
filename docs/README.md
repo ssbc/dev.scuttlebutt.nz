@@ -18,4 +18,4 @@ You should be familiar with JavaScript, Node.js, and at least the basics mention
 
 * The original implementation in [node.js](javascript/).
 * There also is fairly complete implementation in [Go](golang/).
-* There are several rust implementations [rust](rust/), too.
+* There are several [Rust](rust/) implementations, too.
