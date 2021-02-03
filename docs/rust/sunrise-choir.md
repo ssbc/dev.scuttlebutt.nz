@@ -96,11 +96,53 @@ The object signing illustrated above is made possible by the [ssb_crypto](https:
 
 ### Verification
 
-The [ssb-verify-signatures](https://github.com/sunrise-choir/ssb-verify-signatures) crate allows us to verify the signature of an entire SSB message. It also allows the verification of multiple messages in parallel.
+A valid signature isn't the only constraint that SSB messages have to meet. The [ssb-verify-signatures](https://github.com/sunrise-choir/ssb-verify-signatures) crate allows us to verify the signature of an entire SSB message. It also allows the verification of multiple messages in parallel.
+
+Let's first attempt to verify a message we know to be invalid. This message contains a `key` field and nothing else.
 
 ```rust
-// let is_verified = verify_message(&msg).is_ok();
+let key_only_message = r##"{ "key": "%kmXb3MXtBJaNugcEL/Q7G40DgcAkMNTj3yhmxKHjfCM=.sha256" }"##;
+
+// attempt to verify the signature of the key_only_message
+match ssb_verify_signatures::verify_message(key_only_message.as_bytes()) {
+    Ok(_) => println!("verified"),
+    Err(e) => eprintln!("{}", e)
+};
+// Error parsing ssb message as json, it is invalid. Errored with: missing field `value` at line 1 column 65
 ```
+
+Thankfully, the `verify_message()` method returns a very helpful error message to explain why the given message could not be verified. The `ssb_verify_signatures::Error` type is an `enum` with 11 variants. You can read the full list of variants in the [Rust docs for the custom Error type](https://sunrise-choir.github.io/ssb-verify-signatures/ssb_verify_signatures/enum.Error.html).
+
+Now let's try to verify a message that conforms to the required specification.
+
+```rust
+let valid_message = r##"{
+    "key": "%kmXb3MXtBJaNugcEL/Q7G40DgcAkMNTj3yhmxKHjfCM=.sha256",
+    "value": {
+        "previous": "%IIjwbJbV3WBE/SBLnXEv5XM3Pr+PnMkrAJ8F+7TsUVQ=.sha256",
+        "author": "@U5GvOKP/YUza9k53DSXxT0mk3PIrnyAmessvNfZl5E0=.ed25519",
+        "sequence": 8,
+        "timestamp": 1470187438539,
+        "hash": "sha256",
+        "content": {
+            "type": "contact",
+            "contact": "@ye+QM09iPcDJD6YvQYjoQc7sLF/IFhmNbEqgdzQo3lQ=.ed25519",
+            "following": true,
+            "blocking": false
+        },
+        "signature": "PkZ34BRVSmGG51vMXo4GvaoS/2NBc0lzdFoVv4wkI8E8zXv4QYyE5o2mPACKOcrhrLJpymLzqpoE70q78INuBg==.sig.ed25519"
+    },
+    "timestamp": 1571140551543
+}"##;
+
+match ssb_verify_signatures::verify_message(valid_message.as_bytes()) {
+    Ok(_) => println!("verified"),
+    Err(e) => eprintln!("{}", e)
+};
+// verified
+```
+
+TODO: verify multiple messages in parallel
 
 ### Validation
 
