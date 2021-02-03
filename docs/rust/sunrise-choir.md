@@ -2,7 +2,7 @@
 
 ## Introduction
 
-The code for the Sunrise Choir Rust SSB implementation is split between many repositories which can be found on their [GitHub organization page](https://github.com/sunrise-choir). Further information about the team and their work can be found on the [Sunrise Choir website](https://sunrisechoir.com/) or [OpenCollective page](https://opencollective.com/sunrise-choir).
+The code for the Sunrise Choir Rust SSB implementation is split between many repositories which can be found on their [GitHub organization page](https://github.com/sunrise-choir). Many of the crates have excellent low-level documentation in the form of HTML pages generated from documentation comments in the source code. Links for crate-specific documentation can usually be found in the crate repository READMEs. Further information about the team and their work can be found on the [Sunrise Choir website](https://sunrisechoir.com/) or [OpenCollective page](https://opencollective.com/sunrise-choir).
 
 If you are not familiar with the [Rust programming language](https://www.rust-lang.org/), please visit the [Getting started](https://www.rust-lang.org/learn/get-started) page to learn more. The [Rust programming language book](https://doc.rust-lang.org/book/) and [Rust By Example](https://doc.rust-lang.org/stable/rust-by-example/) are both excellent learning guides.
 
@@ -63,5 +63,57 @@ let signature = aruna.sign(&example_string.as_bytes());
 println!("{:?}", signature.as_base64());
 // "o5w5E3Kt2AmJlwx4mocLz4V622m5Y0C3jirs1xTDoHdxvAXbfZMMJ7PfEE5ZV6eLWpI3HyhtmiqyUlRuMSZsBw=="
 
-// notice that the output does not include a ".ed25519" suffix or a sigil prefix
+// note: notice that the output does not include a ".ed25519" suffix or a sigil prefix
 ```
+
+### Verification
+
+Now when we compare the signature against Aruna's public key, we'll see that the signature is valid and that Aruna must have signed this message. This is important for ensuring that an object hasn't been tampered with. Any change to the object will invalidate the signature.
+
+```rust
+let is_valid = aruna.public.verify(&signature, &example_string.as_bytes());
+
+println!("{}", is_valid);
+// true
+```
+
+If we try to do the same verification with Benedict's public key, we'll see that the signature is **not valid**. Either the public key is incorrect or the object has been tampered with, but the signature is invalid.
+
+```rust
+let is_valid = benedict.public.verify(&signature, &example_string.as_bytes());
+
+println!("{}", is_valid);
+// false
+```
+
+## Cryptography
+
+The object signing illustrated above is made possible by the [ssb_crypto](https://docs.rs/ssb-crypto/0.2.2/ssb_crypto/index.html) crate:
+
+> This crate provides the cryptographic functionality needed to implement the Secure Scuttlebutt networking protocols and content signing and encryption.
+
+> There are two implementations of the crypto operations available; one that uses [libsodium](https://libsodium.gitbook.io/) C library (via the [sodiumoxide](https://crates.io/crates/sodiumoxide) crate), and a pure-rust implementation that uses [dalek](https://dalek.rs/) and [RustCrypto](https://github.com/RustCrypto/) crates (which is the default). You can select which implementation to use via Cargo.toml feature flags (see documentation - link above).
+
+### Verification
+
+The [ssb-verify-signatures](https://github.com/sunrise-choir/ssb-verify-signatures) crate allows us to verify the signature of an entire SSB message. It also allows the verification of multiple messages in parallel.
+
+```rust
+// let is_verified = verify_message(&msg).is_ok();
+```
+
+### Validation
+
+```rust
+// let is_valid = validate_message_hash_chain::<_, &[u8]>(&msg, None).is_ok();
+```
+
+## Contact
+
+The Sunrise Choir consists of [@Mikey](https://github.com/ahdinosaur), [@Piet](https://github.com/pietgeursen), [@Matt](https://github.com/mmckegg) and [@Sean](https://github.com/sbillig). This documentation was compiled by [@glyph](https://github.com/mycognosist). All can be found in the Scuttleverse:
+
+* mikey: `@6ilZq3kN0F+dXFHAPjAwMm87JEb/VdB+LC9eIMW3sa0=.ed25519`
+* piet: `@U5GvOKP/YUza9k53DSXxT0mk3PIrnyAmessvNfZl5E0=.ed25519`
+* matt: `@FbGoHeEcePDG3Evemrc+hm+S77cXKf8BRQgkYinJggg=.ed25519`
+* sean: `@N/vWpVVdD1e8IbACUQE4EVGL6+aodQfbQZ8ByC+k79s=.ed25519`
+* glyph: `@HEqy940T6uB+T+d9Jaa58aNfRzLx9eRWqkZljBmnkmk=.ed25519`
