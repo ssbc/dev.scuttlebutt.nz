@@ -8,7 +8,7 @@ If you are not familiar with the [Rust programming language](https://www.rust-la
 
 ## SSB-Keyfile
 
-[SSB-Keyfile](https://github.com/sunrise-choir/ssb-keyfile) provides basic utilities to create and read keyfiles that are compatible with the JS SSB implementation. This module reexports the [`Keypair` struct](https://docs.rs/ssb-crypto/0.2.2/ssb_crypto/struct.Keypair.html) and related methods from the [ssb-crypto](https://docs.rs/ssb-crypto/0.2.2/ssb_crypto/index.html) module.
+[SSB-Keyfile](https://github.com/sunrise-choir/ssb-keyfile) provides basic utilities to create and read keyfiles that are compatible with the JS SSB implementation. This module reexports the [`Keypair` struct](https://docs.rs/ssb-crypto/0.2.2/ssb_crypto/struct.Keypair.html) and related methods from the [ssb-crypto](https://docs.rs/ssb-crypto/0.2.2/ssb_crypto/index.html) module. As with most of the Sunrise Choir Rust SSB modules, SSB-Keyfile can either be imported into another project as a library or compiled into a standalone binary which takes parameters as arguments.
 
 ```rust
 use ssb_keyfile::Keypair;
@@ -44,4 +44,24 @@ println!("{:#?}", benedict);
 let benedict = ssb_keyfile::read_from_path("/home/benedict/.ssb/secret")?;
 ```
 
-TODO
+### Signing
+
+The most common operation with our keys is signing objects and then verifying their signatures. SSB has a very specific message encoding format, but for this example we'll use an example object.
+
+```rust
+// create an example object with json encoding (using serde_json)
+let example_object = json!({ "type": "example" });
+```
+
+We'll use Aruna's private key to sign this object. Since the `keypair.sign()` method takes a byte slice, we convert the JSON object to a `String` and then a byte slice (`[u8]`).
+
+```rust
+let example_string = example_object.to_string();
+
+let signature = aruna.sign(&example_string.as_bytes());
+
+println!("{:?}", signature.as_base64());
+// "o5w5E3Kt2AmJlwx4mocLz4V622m5Y0C3jirs1xTDoHdxvAXbfZMMJ7PfEE5ZV6eLWpI3HyhtmiqyUlRuMSZsBw=="
+
+// notice that the output does not include a ".ed25519" suffix or a sigil prefix
+```
