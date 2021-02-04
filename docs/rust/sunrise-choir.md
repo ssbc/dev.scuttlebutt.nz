@@ -196,9 +196,105 @@ The batch processing methods will return an error (`Err(InvalidSignature)`) if t
 
 ### Validation
 
+A valid signature isn't the only constraint that SSB messages have to meet. The [ssb-validate](https://github.com/sunrise-choir/ssb-validate) crate helps us create and verify messages to ensure that they conform to the [message format](https://ssbc.github.io/scuttlebutt-protocol-guide/#message-format).
+
 ```rust
-// let is_valid = validate_message_hash_chain::<_, &[u8]>(&msg, None).is_ok();
+use ssb_validate;
 ```
+
+The validity of a message depends on some previous state -- for example, each message needs to include a link to the previous message. The first message in a feed will have a `previous` value of `null` and `sequence` of `1`. Here we have an example of message validation using two `about` type messages: the first message declares a `name` for the given `id` (that of the `author`), while the second message defines the `image` for the given `id` by linking to a blob.
+
+```rust
+let valid_message_1 = r##"{
+    "key": "%/v5mCnV/kmnVtnF3zXtD4tbzoEQo4kRq/0d/bgxP1WI=.sha256",
+    "value": {
+        "previous": null,
+        "author": "@U5GvOKP/YUza9k53DSXxT0mk3PIrnyAmessvNfZl5E0=.ed25519",
+        "sequence": 1,
+        "timestamp": 1470186877575,
+        "hash": "sha256",
+        "content": {
+            "type": "about",
+            "about": "@U5GvOKP/YUza9k53DSXxT0mk3PIrnyAmessvNfZl5E0=.ed25519",
+            "name": "Piet"
+        },
+        "signature": "QJKWui3oyK6r5dH13xHkEVFhfMZDTXfK2tW21nyfheFClSf69yYK77Itj1BGcOimZ16pj9u3tMArLUCGSscqCQ==.sig.ed25519"
+    },
+    "timestamp": 1571140551481
+}"##;
+
+let valid_message_2 = r##"{
+    "key": "%kLWDux4wCG+OdQWAHnpBGzGlCehqMLfgLbzlKCvgesU=.sha256",
+    "value": {
+        "previous": "%/v5mCnV/kmnVtnF3zXtD4tbzoEQo4kRq/0d/bgxP1WI=.sha256",
+        "author": "@U5GvOKP/YUza9k53DSXxT0mk3PIrnyAmessvNfZl5E0=.ed25519",
+        "sequence": 2,
+        "timestamp": 1470187292812,
+        "hash": "sha256",
+        "content": {
+            "type": "about",
+            "about": "@U5GvOKP/YUza9k53DSXxT0mk3PIrnyAmessvNfZl5E0=.ed25519",
+            "image": {
+                "link": "&MxwsfZoq7X6oqnEX/TWIlAqd6S+jsUA6T1hqZYdl7RM=.sha256",
+                "size": 642763,
+                "type": "image/png",
+                "width": 512,
+                "height": 512
+            }
+        },
+        "signature": "j3C7Us3JDnSUseF4ycRB0dTMs0xC6NAriAFtJWvx2uyz0K4zSj6XL8YA4BVqv+AHgo08+HxXGrpJlZ3ADwNnDw==.sig.ed25519"
+    },
+    "timestamp": 1571140551485
+}"##;
+
+match ssb_validate::validate_message_hash_chain(valid_message_2.as_bytes(), Some(valid_message_1.as_bytes())) {
+    Ok(_) => println!("validated"),
+    Err(e) => eprintln!("{}", e)
+};
+// validated
+```
+
+Let's try to validate a hash chain using a message we know isn't valid.
+
+```rust
+let invalid_message = r##"{ "field": "value" }"##;
+
+match ssb_validate::validate_message_hash_chain(invalid_message.as_bytes(), Some(valid_message_2.as_bytes())) {
+    Ok(_) => println!("validated"),
+    Err(e) => eprintln!("{}", e)
+};
+// Message was invalid. Decoding failed with: Message("missing field `key`")
+```
+
+Again, as with the `verify_message` methods, `validate_message_hash_chain` returns a very helpful error message to explain why the given message could not be verified. The `ssb_validate::Error` type is an `enum` with 11 variants. You can read the full list of variants in the [Rust docs for the custom Error type](https://sunrise-choir.github.io/ssb-validate/ssb_validate/enum.Error.html).
+
+Just like the `ssb-verify-signatures` crate, `ssb-validate` provides additional methods to validate a message value hash chain and to validate both message and message value hash chains in parallel.
+
+```rust
+match ssb_validate::validate_message_value_hash_chain(valid_msg_value_2.as_bytes(), Some(valid_msg_value_1.as_bytes())) {
+    Ok(_) => println!("validated"),
+    Err(e) => eprintln!("{}", e)
+};
+// validated
+```
+
+The batch processing methods validate a collection of messages or message `value` fields. The messages must all have been created by the same author and must be ordered by ascending sequence number, with no missing messages.
+
+These methods will mainly be useful during replication. For example, we can collect all the latest messages from a feed we're replicating and batch validate all the messages at once.
+
+```rust
+let messages = [valid_message_1.as_bytes(), valid_message_2.as_bytes()];
+
+match ssb_validate::par_validate_message_hash_chain_of_feed::<_, &[u8]>(&messages, None) {
+    Ok(_) => println!("validated"),
+    Err(e) => eprintln!("{}", e)
+};
+// validated
+```
+
+## TODO
+
+Peers. Replication. Etc.
 
 ## Contact
 
