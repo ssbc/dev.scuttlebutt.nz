@@ -142,7 +142,57 @@ match ssb_verify_signatures::verify_message(valid_message.as_bytes()) {
 // verified
 ```
 
-TODO: verify multiple messages in parallel
+The `ssb-verify-signatures` crate also provides a method to verify the signature of the message `value` fields, without including the `key` and `timestamp` fields.
+
+```rust
+let valid_message_value = r##"{
+    "previous": "%IIjwbJbV3WBE/SBLnXEv5XM3Pr+PnMkrAJ8F+7TsUVQ=.sha256",
+    "author": "@U5GvOKP/YUza9k53DSXxT0mk3PIrnyAmessvNfZl5E0=.ed25519",
+    "sequence": 8,
+    "timestamp": 1470187438539,
+    "hash": "sha256",
+    "content": {
+        "type": "contact",
+        "contact": "@ye+QM09iPcDJD6YvQYjoQc7sLF/IFhmNbEqgdzQo3lQ=.ed25519",
+        "following": true,
+        "blocking": false
+    },
+    "signature": "PkZ34BRVSmGG51vMXo4GvaoS/2NBc0lzdFoVv4wkI8E8zXv4QYyE5o2mPACKOcrhrLJpymLzqpoE70q78INuBg==.sig.ed25519"
+}"##;
+
+match ssb_verify_signatures::verify_message_value(valid_message_value.as_bytes()) {
+    Ok(_) => println!("verified"),
+    Err(e) => eprintln!("{}", e)
+};
+// verified
+```
+
+These verification methods are great when dealing with single messages but are not ideal for batch processing a collection of messages. Luckily, we also have access to two methods which allow parallel verification.
+
+```rust
+// convert message to bytes for easier batch processing
+let valid_msg = valid_message.as_bytes();
+let messages = [valid_msg, valid_msg, valid_msg];
+
+// chunk_size is passed as the second argument (defaults to `50` for `None`)
+match ssb_verify_signatures::par_verify_messages(&messages, None) {
+    Ok(_) => println!("verified"),
+    Err(e) => eprintln!("{}", e)
+};
+// verified
+
+// convert message value to bytes
+let valid_msg_value = valid_message_value.as_bytes();
+let values = [valid_msg_value, valid_msg_value, valid_msg_value];
+
+match ssb_verify_signatures::par_verify_message_values(&values, None) {
+    Ok(_) => println!("verified"),
+    Err(e) => eprintln!("{}", e)
+};
+// verified
+```
+
+The batch processing methods will return an error (`Err(InvalidSignature)`) if the verification of any message signature fails. Unfortunately, the error does not identify which message failed to verify. If you need to work out which message failed, you might have to find it using the `ssb_verify_signatures::verify_message_value` method after the parallel method has returned an error.
 
 ### Validation
 
