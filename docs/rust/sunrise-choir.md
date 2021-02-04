@@ -96,7 +96,7 @@ The object signing illustrated above is made possible by the [ssb_crypto](https:
 
 ### Verification
 
-A valid signature isn't the only constraint that SSB messages have to meet. The [ssb-verify-signatures](https://github.com/sunrise-choir/ssb-verify-signatures) crate allows us to verify the signature of an entire SSB message. It also allows the verification of multiple messages in parallel.
+The [ssb-verify-signatures](https://github.com/sunrise-choir/ssb-verify-signatures) crate allows us to verify the signature of an entire SSB message. It also allows the verification of multiple messages in parallel.
 
 Let's first attempt to verify a message we know to be invalid. This message contains a `key` field and nothing else.
 
@@ -196,7 +196,7 @@ The batch processing methods will return an error (`Err(InvalidSignature)`) if t
 
 ### Validation
 
-A valid signature isn't the only constraint that SSB messages have to meet. The [ssb-validate](https://github.com/sunrise-choir/ssb-validate) crate helps us create and verify messages to ensure that they conform to the [message format](https://ssbc.github.io/scuttlebutt-protocol-guide/#message-format).
+A valid signature isn't the only constraint that SSB messages have to meet. The [ssb-validate](https://github.com/sunrise-choir/ssb-validate) crate helps us to verify that messages conform to the [message format](https://ssbc.github.io/scuttlebutt-protocol-guide/#message-format).
 
 ```rust
 use ssb_validate;
