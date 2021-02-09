@@ -6,6 +6,8 @@ The code for the Sunrise Choir Rust SSB implementation is split between many rep
 
 If you are not familiar with the [Rust programming language](https://www.rust-lang.org/), please visit the [Getting started](https://www.rust-lang.org/learn/get-started) page to learn more. The [Rust programming language book](https://doc.rust-lang.org/book/) and [Rust By Example](https://doc.rust-lang.org/stable/rust-by-example/) are both excellent learning guides.
 
+A playground repository exists as a partner reference to this document: [Sunrise SSB Playground](https://github.com/mycognosist/sunrise-ssb-playground). The repo contains examples which can be run using the Rust compiler, and which demonstrate the features documented here.
+
 ## SSB-Keyfile
 
 [SSB-Keyfile](https://github.com/sunrise-choir/ssb-keyfile) provides basic utilities to create and read keyfiles that are compatible with the JS SSB implementation. This module reexports the [`Keypair` struct](https://docs.rs/ssb-crypto/0.2.2/ssb_crypto/struct.Keypair.html) and related methods from the [ssb-crypto](https://docs.rs/ssb-crypto/0.2.2/ssb_crypto/index.html) module. As with most of the Sunrise Choir Rust SSB modules, SSB-Keyfile can either be imported into another project as a library or compiled into a standalone binary which takes parameters as arguments.
@@ -292,9 +294,98 @@ match ssb_validate::par_validate_message_hash_chain_of_feed::<_, &[u8]>(&message
 // validated
 ```
 
-## TODO
+-----
 
-Peers. Replication. Etc.
+## SSB Multiformats
+
+You may have noticed that entities in SSB are referenced with a string starting with a sigil:
+
+- **`%`** -- Message
+- **`&`** -- Blob
+- **`@`** -- Feed
+
+This is followed by a base64-encoded integer and a suffix that describes what kind of data this is. We _could_ write gourmet parsers for this every time we need to parse an SSB reference, but it's so common that we have a crate which offers a solution for this exact problem: [ssb-multiformats](https://github.com/sunrise-choir/ssb-multiformats).
+
+```rust
+use ssb_multiformats::multifeed::Multifeed;
+
+let maybe_feed = "@nUtgCIpqOsv6k5mnWKA4JeJVkJTd9Oz2gmv6rojQeXU=.ed25519".as_bytes();
+
+if Multifeed::from_legacy(&maybe_feed).is_ok() {
+    println!("is feed")
+};
+```
+
+We also have access to an equivalent method for handling message and blob references.
+
+```rust
+use ssb_multiformats::multihash::Multihash;
+
+let ssb_ref = "%x60lINqpVU9Fw5cdNq/7raSy/N2zUs8NT9TLsXu5qSQ=.sha256".as_bytes();
+
+let is_msg_or_blob = Multihash::from_legacy(&ssb_ref).is_ok();
+println!("{}", is_msg_or_blob);
+// true
+```
+
+Note that `Multihash::from_legacy()` returns `Ok(Multihash, &[u8])` on success, where `Multihash` is an `enum` with two variants: `Message([u8; 32])` and `Blob([u8; 32])`.
+
+## Peer Connections
+
+We've got our keypair, we know how to make messages, our feed seems to be valid -- but none of that is very useful unless we can send those messages to peers. Before we think about connecting to peers, we first have to be able to define the Scuttleverse we're acting in by creating or referencing a network key.
+
+### Network Key
+
+The 'network key' - also known as the 'network identifier', 'app key' or 'SHS key' - is used during the [secret handshake](https://ssbc.github.io/scuttlebutt-protocol-guide/#handshake) to prove that both parties are participating in the same SSB network. It is a 32-byte key which allows distinct, isolated Scuttlebutt networks to be created. If you're building a network of temperature sensors on Secure Scuttlebutt you probably don't want to be peering with people sharing source code or building a social network (👋). In that case, you would supply a unique network key when performing a handshake.
+
+The [ssb-crypto](https://docs.rs/ssb-crypto/0.2.2/ssb_crypto/index.html) crate provides us with a [`NetworkKey struct`](https://docs.rs/ssb-crypto/0.2.2/ssb_crypto/struct.NetworkKey.html) with convenient methods for working with network keys.
+
+```rust
+use ssb_crypto::NetworkKey;
+```
+
+We'll use the most common app key, implemented as a `const` for `NetworkKey`, which is used for the offline-first social network that might be familiar with.
+
+```rust
+let netkey = NetworkKey::SSB_MAIN_NET;
+```
+
+If you wish to create a distinct, isolated Scuttlebutt network, generate a random network key instead of using the `SSB_MAIN_NET` key.
+
+```rust
+let alt_netkey = NetworkKey::generate();
+
+// ensure the generated key is distinct from the main network key
+assert_ne!(alt_netkey, NetworkKey::SSB_MAIN_NET);
+```
+
+Alternatively, generate a random network key using a given cryptographically-secure random number generator.
+
+```rust
+let mut rng = rand::thread_rng();
+
+let rng_alt_netkey = NetworkKey::generate_with_rng(&mut rng);
+```
+
+### Discovery
+
+As described in the Scuttlebutt Protocol Guide's section on [Discovery](https://ssbc.github.io/scuttlebutt-protocol-guide/#discovery), we need to know the IP address, port number and public key of a peer in order to make a connection. The Scuttlebutt protocol offers three methods for peers to discover one other: local network discovery (via UDP broadcast messages), invite codes and pub "about" messages.
+
+The Sunrise Choir implementation does not define discovery mechanisms or peer address data models for us. These aspects of the SSB application are left up to us to develop. Fortunately, two existing implementations are available for us to study and replicate: the [Scuttle-chat](https://github.com/clevinson/scuttle-chat) application implements a local network [discovery](https://github.com/clevinson/scuttle-chat/blob/master/src/discovery.rs) mechanism using UDP, as does the [solar](https://github.com/Kuska-ssb/solar) application in [lan_discovery](https://github.com/Kuska-ssb/solar/blob/master/src/actors/lan_discovery.rs).
+
+### Secret Handshake
+
+Once we have discovered the necessary details of our peer (IP address, port, public key), we can create a TCP stream between us and perform the handshake - a 4-step process to authenticate both parties and establish an encrypted channel. In the Sunrise Choir SSB implementation, the [ssb-handshake](https://github.com/sunrise-choir/ssb-handshake) crate provides us with the necessary functionality. The crate provides two primary functions: one for the [`server_side()`](https://docs.rs/ssb-handshake/0.5.1/ssb_handshake/fn.server_side.html) of the handshake and one for the [`client_side()`](https://docs.rs/ssb-handshake/0.5.1/ssb_handshake/fn.client_side.html).
+
+```rust
+let ip_addr = ;
+let port: u16 = 45982;
+
+let listener = TcpListener::bind(hs_listener_socket_addr)?;
+
+let server_side = ssb_handshake::server_side(&mut s_stream, &net_key, &skey);
+```
+// https://github.com/clevinson/scuttle-chat/blob/master/src/peer_manager.rs
 
 ## Contact
 
