@@ -294,8 +294,6 @@ match ssb_validate::par_validate_message_hash_chain_of_feed::<_, &[u8]>(&message
 // validated
 ```
 
------
-
 ## SSB Multiformats
 
 You may have noticed that entities in SSB are referenced with a string starting with a sigil:
