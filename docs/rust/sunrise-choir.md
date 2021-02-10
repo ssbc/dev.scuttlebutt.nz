@@ -344,7 +344,7 @@ The [ssb-crypto](https://docs.rs/ssb-crypto/0.2.2/ssb_crypto/index.html) crate p
 use ssb_crypto::NetworkKey;
 ```
 
-We'll use the most common app key, implemented as a `const` for `NetworkKey`, which is used for the offline-first social network that might be familiar with.
+We'll use the most common app key, implemented as a `const` for `NetworkKey`, which is used for the offline-first social network that you might be familiar with.
 
 ```rust
 let netkey = NetworkKey::SSB_MAIN_NET;
@@ -375,17 +375,26 @@ The Sunrise Choir implementation does not define discovery mechanisms or peer ad
 
 ### Secret Handshake
 
-Once we have discovered the necessary details of our peer (IP address, port, public key), we can create a TCP stream between us and perform the handshake - a 4-step process to authenticate both parties and establish an encrypted channel. In the Sunrise Choir SSB implementation, the [ssb-handshake](https://github.com/sunrise-choir/ssb-handshake) crate provides us with the necessary functionality. The crate provides two primary functions: one for the [`server_side()`](https://docs.rs/ssb-handshake/0.5.1/ssb_handshake/fn.server_side.html) of the handshake and one for the [`client_side()`](https://docs.rs/ssb-handshake/0.5.1/ssb_handshake/fn.client_side.html).
+Once we have discovered the necessary details of our peer (IP address, port, public key), we can create a TCP stream between us and perform the handshake: a 4-step process to authenticate both parties and establish an encrypted channel. In the Sunrise Choir SSB implementation, the [ssb-handshake](https://github.com/sunrise-choir/ssb-handshake) crate provides us with the necessary functionality. The crate provides two primary functions: one for the [`server_side()`](https://docs.rs/ssb-handshake/0.5.1/ssb_handshake/fn.server_side.html) of the handshake and one for the [`client_side()`](https://docs.rs/ssb-handshake/0.5.1/ssb_handshake/fn.client_side.html).
 
 ```rust
-let ip_addr = ;
-let port: u16 = 45982;
-
-let listener = TcpListener::bind(hs_listener_socket_addr)?;
-
-let server_side = ssb_handshake::server_side(&mut s_stream, &net_key, &skey);
+// initiate the server side of the handshake
+let handshake_keys = ssb_handshake::server_side(&mut stream, &net_key, &server_keypair).await?;
 ```
-// https://github.com/clevinson/scuttle-chat/blob/master/src/peer_manager.rs
+
+Note that we need to know the public key of the server we are attempting to authenticate with. 
+
+```rust
+// initiate the client side of the handshake
+let handshake_keys = ssb_handshake::client_side(&mut stream, &net_key, &client_keypair, &server_pk).await?;
+```
+
+Working code examples for these methods (using [`async_std`](https://docs.rs/async-std/1.9.0/async_std/)) can be found in the Sunrise SSB Playground: [`async_server_handshake.rs`](https://github.com/mycognosist/sunrise-ssb-playground/blob/main/examples/async_server_handshake.rs) and [`async_client_handshake`](https://github.com/mycognosist/sunrise-ssb-playground/blob/main/examples/async_client_handshake.rs).
+
+## TODO
+
+Box stream: https://github.com/sunrise-choir/ssb-boxstream
+Packet stream: https://github.com/sunrise-choir/ssb-packetstream
 
 ## Contact
 
