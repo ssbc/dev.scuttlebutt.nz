@@ -387,11 +387,58 @@ Note that we need to know the public key of the server we are attempting to auth
 let handshake_keys = ssb_handshake::client_side(&mut stream, &net_key, &client_keypair, &server_pk).await?;
 ```
 
-Working code examples for these methods (using [`async_std`](https://docs.rs/async-std/1.9.0/async_std/)) can be found in the Sunrise SSB Playground: [`async_server_handshake.rs`](https://github.com/mycognosist/sunrise-ssb-playground/blob/main/examples/async_server_handshake.rs) and [`async_client_handshake`](https://github.com/mycognosist/sunrise-ssb-playground/blob/main/examples/async_client_handshake.rs).
+Working code examples for these methods (using [`async_std`](https://docs.rs/async-std/1.9.0/async_std/)) can be found in the Sunrise SSB Playground: [`handshake_server.rs`](https://github.com/mycognosist/sunrise-ssb-playground/blob/main/examples/handshake_server.rs) and [`handshake_client`](https://github.com/mycognosist/sunrise-ssb-playground/blob/main/examples/handshake_client.rs).
+
+The result of our successful handshake is the [`HandshakeKeys`](https://github.com/sunrise-choir/ssb-handshake/blob/0ee6c9b099a56b9493d835740d946177748a9288/src/crypto/outcome.rs) `struct` (assigned to the `handshake_keys` variable in our example code above). This `struct` contains the public key of our remote peer, as well as the keys and nonces required to encrypt further communications via box stream.
+
+### Box Stream
+
+Box stream is the bulk encryption protocol used to exchange messages following the handshake until the connection ends. It is designed to protect messages from being read or modified by a man-in-the-middle.
+
+The [ssb-boxstream crate](https://crates.io/crates/ssb-boxstream) exposes a [`BoxStream struct`](https://docs.rs/ssb-boxstream/0.2.2/ssb_boxstream/struct.BoxStream.html) comprised of two fields: a reader and a writer. These are used to send and receive data from our peer. In order to create a new boxstream, we first need our TCP stream (which we previously declared as `stream`) and the set of keys returned from our successful secret handshake attempt (declared as `handshake_keys`). Let's see how this works in practice.
+
+```rust
+use ssb_boxstream::BoxStream;
+
+// split the tcp stream into a reader and writer
+// note: async_std tcp stream does not implement `.split()`.
+// we are cloning the stream here to allow separate access.
+let tcp_reader = stream.clone();
+let tcp_writer = stream;
+
+// create a new boxstream and split it into a reader and writer
+let (mut box_reader, mut box_writer) = BoxStream::new(
+    tcp_reader,
+    tcp_writer,
+    handshake_keys.read_key,
+    handshake_keys.read_starting_nonce,
+    handshake_keys.write_key,
+    handshake_keys.write_starting_nonce,
+)
+.split();
+
+// test data to be written to the boxstream
+let body = [1, 1, 0, 2, 2, 0, 2, 1];
+
+// write some data to the box
+box_writer.write_all(&body[0..8]).await?;
+
+// flush the writer buffer (send the data)
+box_writer.flush().await?;
+```
+
+The above example illustrates writing data to the boxstream, but how do we receive the data on the other side? We create a buffer (after a successful handshake and the creation of our boxstream) and read into it from the boxstream reader.
+
+```rust
+// create a buffer to store incoming data
+let mut buf = [0; 8];
+
+// read some data from the box
+box_reader.read(&mut buf).await?;
+```
 
 ## TODO
 
-Box stream: https://github.com/sunrise-choir/ssb-boxstream
 Packet stream: https://github.com/sunrise-choir/ssb-packetstream
 
 ## Contact
