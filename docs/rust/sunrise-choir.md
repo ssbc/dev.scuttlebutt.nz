@@ -10,7 +10,7 @@ A playground repository exists as a partner reference to this document: [Sunrise
 
 ## SSB-Keyfile
 
-[SSB-Keyfile](https://github.com/sunrise-choir/ssb-keyfile) provides basic utilities to create and read keyfiles that are compatible with the JS SSB implementation. This module reexports the [`Keypair` struct](https://docs.rs/ssb-crypto/0.2.2/ssb_crypto/struct.Keypair.html) and related methods from the [ssb-crypto](https://docs.rs/ssb-crypto/0.2.2/ssb_crypto/index.html) module. As with most of the Sunrise Choir Rust SSB modules, SSB-Keyfile can either be imported into another project as a library or compiled into a standalone binary which takes parameters as arguments.
+[SSB-Keyfile](https://crates.io/crates/ssb-keyfile) provides basic utilities to create and read keyfiles that are compatible with the JS SSB implementation. This module reexports the [`Keypair` struct](https://docs.rs/ssb-crypto/0.2.2/ssb_crypto/struct.Keypair.html) and related methods from the [ssb-crypto](https://docs.rs/ssb-crypto/0.2.2/ssb_crypto/index.html) module. As with most of the Sunrise Choir Rust SSB modules, SSB-Keyfile can either be imported into another project as a library or compiled into a standalone binary which takes parameters as arguments.
 
 ```rust
 use ssb_keyfile::Keypair;
@@ -90,7 +90,7 @@ println!("{}", is_valid);
 
 ## Cryptography
 
-The object signing illustrated above is made possible by the [ssb_crypto](https://docs.rs/ssb-crypto/0.2.2/ssb_crypto/index.html) crate:
+The object signing illustrated above is made possible by the [ssb-crypto](https://crates.io/crates/ssb-crypto) crate:
 
 > This crate provides the cryptographic functionality needed to implement the Secure Scuttlebutt networking protocols and content signing and encryption.
 
@@ -98,7 +98,7 @@ The object signing illustrated above is made possible by the [ssb_crypto](https:
 
 ### Verification
 
-The [ssb-verify-signatures](https://github.com/sunrise-choir/ssb-verify-signatures) crate allows us to verify the signature of an entire SSB message. It also allows the verification of multiple messages in parallel.
+The [ssb-verify-signatures](https://crates.io/crates/ssb-verify-signatures) crate allows us to verify the signature of an entire SSB message. It also allows the verification of multiple messages in parallel.
 
 Let's first attempt to verify a message we know to be invalid. This message contains a `key` field and nothing else.
 
@@ -198,7 +198,7 @@ The batch processing methods will return an error (`Err(InvalidSignature)`) if t
 
 ### Validation
 
-A valid signature isn't the only constraint that SSB messages have to meet. The [ssb-validate](https://github.com/sunrise-choir/ssb-validate) crate helps us to verify that messages conform to the [message format](https://ssbc.github.io/scuttlebutt-protocol-guide/#message-format).
+A valid signature isn't the only constraint that SSB messages have to meet. The [ssb-validate](https://crates.io/crates/ssb-validate) crate helps us to verify that messages conform to the [message format](https://ssbc.github.io/scuttlebutt-protocol-guide/#message-format).
 
 ```rust
 use ssb_validate;
@@ -302,7 +302,7 @@ You may have noticed that entities in SSB are referenced with a string starting 
 - **`&`** -- Blob
 - **`@`** -- Feed
 
-This is followed by a base64-encoded integer and a suffix that describes what kind of data this is. We _could_ write gourmet parsers for this every time we need to parse an SSB reference, but it's so common that we have a crate which offers a solution for this exact problem: [ssb-multiformats](https://github.com/sunrise-choir/ssb-multiformats).
+This is followed by a base64-encoded integer and a suffix that describes what kind of data this is. We _could_ write gourmet parsers for this every time we need to parse an SSB reference, but it's so common that we have a crate which offers a solution for this exact problem: [ssb-multiformats](https://crates.io/crates/ssb-multiformats).
 
 ```rust
 use ssb_multiformats::multifeed::Multifeed;
@@ -336,7 +336,7 @@ We've got our keypair, we know how to make messages, our feed seems to be valid 
 
 The 'network key' - also known as the 'network identifier', 'app key' or 'SHS key' - is used during the [secret handshake](https://ssbc.github.io/scuttlebutt-protocol-guide/#handshake) to prove that both parties are participating in the same SSB network. It is a 32-byte key which allows distinct, isolated Scuttlebutt networks to be created. If you're building a network of temperature sensors on Secure Scuttlebutt you probably don't want to be peering with people sharing source code or building a social network (👋). In that case, you would supply a unique network key when performing a handshake.
 
-The [ssb-crypto](https://docs.rs/ssb-crypto/0.2.2/ssb_crypto/index.html) crate provides us with a [`NetworkKey struct`](https://docs.rs/ssb-crypto/0.2.2/ssb_crypto/struct.NetworkKey.html) with convenient methods for working with network keys.
+The [ssb-crypto](https://crates.io/crates/ssb-crypto) crate provides us with a [`NetworkKey struct`](https://docs.rs/ssb-crypto/0.2.2/ssb_crypto/struct.NetworkKey.html) with convenient methods for working with network keys.
 
 ```rust
 use ssb_crypto::NetworkKey;
@@ -373,7 +373,7 @@ The Sunrise Choir implementation does not define discovery mechanisms or peer ad
 
 ### Secret Handshake
 
-Once we have discovered the necessary details of our peer (IP address, port, public key), we can create a TCP stream between us and perform the handshake: a 4-step process to authenticate both parties and establish an encrypted channel. In the Sunrise Choir SSB implementation, the [ssb-handshake](https://github.com/sunrise-choir/ssb-handshake) crate provides us with the necessary functionality. The crate provides two primary functions: one for the [`server_side()`](https://docs.rs/ssb-handshake/0.5.1/ssb_handshake/fn.server_side.html) of the handshake and one for the [`client_side()`](https://docs.rs/ssb-handshake/0.5.1/ssb_handshake/fn.client_side.html).
+Once we have discovered the necessary details of our peer (IP address, port, public key), we can create a TCP stream between us and perform the handshake: a 4-step process to authenticate both parties and establish an encrypted channel. In the Sunrise Choir SSB implementation, the [ssb-handshake](https://crates.io/crates/ssb-handshake) crate provides us with the necessary functionality. The crate provides two primary functions: one for the [`server_side()`](https://docs.rs/ssb-handshake/0.5.1/ssb_handshake/fn.server_side.html) of the handshake and one for the [`client_side()`](https://docs.rs/ssb-handshake/0.5.1/ssb_handshake/fn.client_side.html).
 
 ```rust
 // initiate the server side of the handshake
