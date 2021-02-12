@@ -437,9 +437,75 @@ let mut buf = [0; 8];
 box_reader.read(&mut buf).await?;
 ```
 
+### Packet Stream (RPC Protocol)
+
+While it's possible to read and write raw data over the box stream, SSB implements an RPC (remote procedure call) protocol to define the format of messages passed between peers. The [ssb-packetstream](https://crates.io/crates/ssb-packetstream) crate provides the data types and functionality we need to send data packets over the stream. Let's continue building on our box stream example to read and write packets.
+
+```rust
+use ssb_packetstream::*;
+use use futures::sink::SinkExt;
+
+// create a new packet sink (writer)
+let mut packet_sink = PacketSink::new(box_writer);
+
+// create a packet to send (write to sink)
+let p = Packet::new(
+    IsStream::Yes,
+    IsEnd::No,
+    BodyType::Binary,       // binary, utf8 or json
+    12345,                  // id (i32)
+    vec![1, 2, 3, 4, 5],    // body (Vec<u8>)
+);
+
+// send the packet
+packet_sink.send(p).await.unwrap();
+
+// close the sink (sends a 'goodbye message')
+packet_sink.close().await.unwrap();
+```
+
+Now let's create a packet stream to receive the packet on the client-side of our connection.
+
+```rust
+// create a new packet stream (reader)
+let mut packet_stream = PacketStream::new(box_reader);
+
+// attempt to receive a packet (read from stream)
+let packet = packet_stream.next().await.unwrap().unwrap();
+
+println!("Packet received: {:?} from {:?}", &packet.body, packet.id);
+// Packet received: [1, 2, 3, 4, 5] from 12345
+
+// check if data packet is part of a stream
+println!("IsStream: {}", packet.is_stream());
+// IsStream: true
+
+// check if data packet represents the end of a stream
+println!("IsEnd: {}", packet.is_end());
+// IsEnd: false
+```
+
+Once the communication is complete, we send a 'goodbye message' to close the stream with our peer.
+
+```rust
+// close the sink (send a 'goodbye message')
+packet_sink.close().await.unwrap();
+```
+
+```rust
+// attempt to receive the next packet ('goodbye message' in this case)
+match packet_stream.next().await {
+    Some(p) => println!("{:?}", p),             // Ok(Packet { /* fields */ })
+    None => println!("received rpc goodbye")    // [0u8; 9]
+};
+// received rpc goodbye
+```
+
+That covers the basics of working with packet streams using the `ssb-packetstream` crate. If you're looking for a more comprehensive reference for the RPC protocol, remember to check out the exquisitely-craft [Scuttlebutt Protocol Guide](https://ssbc.github.io/scuttlebutt-protocol-guide/index.html#rpc-protocol).
+
 ## TODO
 
-Packet stream: https://github.com/sunrise-choir/ssb-packetstream
+Replication.
 
 ## Contact
 
