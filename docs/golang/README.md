@@ -1,8 +1,8 @@
 # go-ssb
 
-## Introdcution
+## Introduction
 
-Go-SSB implements most of the existing javascript functionallity but is less modular, due to the typed nature of the language. Most of the code lives in a single repository: [go-ssb](https://https://github.com/cryptoscope/ssb) with a couple of packages split out, like `go-muxrpc` and `secretstream`.
+Go-SSB implements most of the existing JavaScript functionality but is less modular, due to the typed nature of the language. Most of the code lives in a single repository: [go-ssb](https://github.com/cryptoscope/ssb) with a couple of packages split out, like `go-muxrpc` and `secretstream`.
 
 The import path for the code is `go.cryptoscope.co/ssb`.
 
@@ -47,7 +47,7 @@ They also implement other sub-protocols like ssb-blobs.
 * private - about to be deprecated way of accessing private messages
 * friends - supplies some of [ssb-friends](https://github.com/ssbc/ssb-friends), namly `isFollowing`, `isBlocking` and `hops` but not `hopStream`, `onEdge` or `createLayer`.
 * whoami - returns the public key reference of the peer you are talking to.
-* blobs - the muxrpc handlers for [ssb-blobs](https://github.com/ssbc/ssb-blobs). The storage and want-managment is found in `blobstore`.
+* blobs - the muxrpc handlers for [ssb-blobs](https://github.com/ssbc/ssb-blobs). The storage and want-management is found in `blobstore`.
 
 
 [Plugins2](https://github.com/cryptoscope/ssb/tree/master/plugins2) is an attempt to unify the index generation and muxrpc handler code.
@@ -60,12 +60,11 @@ They also implement other sub-protocols like ssb-blobs.
 
 ### Sbot
 
-This package ties together network, repo and plugins like graph and blobs into a large server that offers data-access APIs
-and background replication. It's name dates back to a time where ssb-server was still called scuttlebot, in short: sbot.
+This package ties together network, repo and plugins like graph and blobs into a large server that offers data-access APIs and background replication. It's name dates back to a time where ssb-server was still called scuttlebot, in short: sbot.
 
 It offers a flexible [functional options API](https://pkg.go.dev/go.cryptoscope.co/ssb/sbot#Option) to tune the server as desired. This includes file locations, network and signing keypairs, local discovery behavior and plugin selection.
 
-For instance, if you wanted a bot with local disvery enabled (by default it's off) and the replication database on an custom mountpoint, you would do this:
+For instance, if you wanted a bot with local disvery enabled (by default it's off) and the replication database on a custom mountpoint, you would do this:
 
 ```go
 import "go.cryptoscope.co/ssb/sbot"
@@ -97,7 +96,7 @@ func ex() {
 
 ### Misc
 
-* [blobstore](https://pkg.go.dev/go.cryptoscope.co/ssb/blobstore) - the filesystem storage and simpathy managment for [ssb-blobs](https://github.com/ssbc/ssb-blobs)
+* [blobstore](https://pkg.go.dev/go.cryptoscope.co/ssb/blobstore) - the filesystem storage and sympathy managment for [ssb-blobs](https://github.com/ssbc/ssb-blobs)
 * network - a utility module for dialing and listening to secret-handshake powered muxrpc connections
 * [graph](https://pkg.go.dev/go.cryptoscope.co/ssb/graph) - derives trust/block relations by consuming type:contact message and offers lookup APIs between two feeds.
 * [client](https://pkg.go.dev/go.cryptoscope.co/ssb/client) - a simple muxrpc interface to common ssb methods, similar to [ssb-client](https://github.com/ssbc/ssb-client)
@@ -106,8 +105,8 @@ func ex() {
 
 ### Tests
 
-while most folders contain `_test.go` files where functionallity is tested as unit tests, this folder
-contains sepcial code to run tests against the javascript implementation.
+While most folders contain `_test.go` files where functionallity is tested as unit tests, this folder
+contains sepcial code to run tests against the JavaScript implementation.
 
 ## Database concept Overview
 
@@ -116,9 +115,8 @@ Go-SSB's choice of data storage and retrieval is very much inspired by ssb-db / 
 A big part of working with ssb means dealing with append-only logs.
 The current abstracted interface is implemented in [margaret.Log](https://pkg.go.dev/go.cryptoscope.co/margaret@v0.1.6#Log).
 
-* `Append(interface{}) (Seq, error)` add's a new entry.
-(In go-ssb usually done through [`sbot.PublishLog`](https://pkg.go.dev/go.cryptoscope.co/ssb/sbot#Sbot) which also signs the entry, or through replication in [`message.NewVerifySink`](https://pkg.go.dev/go.cryptoscope.co/ssb/message#NewVerifySink))
-* `Get(Seq) (interface{}, error)` retreives the entry behind that sequence number or an error.
+* `Append(interface{}) (Seq, error)` adds a new entry. (In go-ssb usually done through [`sbot.PublishLog`](https://pkg.go.dev/go.cryptoscope.co/ssb/sbot#Sbot) which also signs the entry, or through replication in [`message.NewVerifySink`](https://pkg.go.dev/go.cryptoscope.co/ssb/message#NewVerifySink))
+* `Get(Seq) (interface{}, error)` retrieves the entry behind that sequence number or an error.
 * `Query(...) (luigi.Source, error)` query returns a source from which matching elements can be read.
 * `Seq() luigi.Observable` can be used to be notified when new messages are appended.
 
@@ -134,7 +132,7 @@ Since go-ssb also not only supports the json-based feed format but also [gabbygr
 
 The `graph` and `plugins2/names` packages show examples of indexes that boil down all the messages to a reduced state.
 
-The `graph` package goes through all the `type:contact` messages and just stores the latest information for each pair of author and (un)followed or (un)blocked contact. This information can then directly be used by `plugins/friends` to answer muxrpc `friends.isFollowing` call's or in aggretate to build the whole trust graph for range lookups (hops between A and B) or the set of feeds that should be fetched.
+The `graph` package goes through all the `type:contact` messages and just stores the latest information for each pair of author and (un)followed or (un)blocked contact. This information can then directly be used by `plugins/friends` to answer muxrpc `friends.isFollowing` calls or in aggregate to build the whole trust graph for range lookups (hops between A and B) or the set of feeds that should be fetched.
 
 The `plugins2/names` package implements the same muxrpc interface as [ssb-names](https://github.com/ssbc/ssb-names). It does a similar thing to `graph` but for `type:about` messages and the name, image and description information in them.
 
@@ -146,13 +144,13 @@ Enter [MultiLog](https://pkg.go.dev/go.cryptoscope.co/margaret/multilog), it ret
 
 #### Implementation details
 
-The first attempt we made stored an entry like `@publicKey:N -> ReceiveSeqM` (where N is the logical sequence entry on the feed and M the sequence of the message in the receive log) in a key-value database (`margaret/multilog/badger`). This worked but came with a lot of churn since the values are quite small, addtioanlly keys are large and redundant.
+The first attempt we made stored an entry like `@publicKey:N -> ReceiveSeqM` (where N is the logical sequence entry on the feed and M the sequence of the message in the receive log) in a key-value database (`margaret/multilog/badger`). This worked but came with a lot of churn since the values are quite small, additionally keys are large and redundant.
 
-A newer approach is to store the set of receivelog sequences as a special kind of [Bitmap](https://en.wikipedia.org/wiki/Bitmap). (tl;dr: You can imagine these as a compressed array of integers.) This is advantages not only because we only store one bitmap for all the messages in a set (like `by author:x` or `by type:y`) but also because it allows us to use them as compound indexes since they can be logically combined via boolean algebra (`x AND y` gives us the intersection, `x OR y` gives us the union) since they all map to the same messages in the receive log.
+A newer approach is to store the set of receivelog sequences as a special kind of [Bitmap](https://en.wikipedia.org/wiki/Bitmap). (tl;dr: You can imagine these as a compressed array of integers.) This is advantageous not only because we only store one bitmap for all the messages in a set (like `by author:x` or `by type:y`) but also because it allows us to use them as compound indexes since they can be logically combined via boolean algebra (`x AND y` gives us the intersection, `x OR y` gives us the union) since they all map to the same messages in the receive log.
 
 #### Example Query by User
-A simple example would be accessing a single users feed, identified by it's public key.
 
+A simple example would be accessing a single users feed, identified by it's public key.
 
 ```go
 
@@ -198,10 +196,10 @@ func ex() {
 Here are modules/packages that are not part of the core mono repository:
 
 * The [secret-handshake](https://secret-handshake.club) key exchange is available as [secretstream](https://godoc.org/go.cryptoscope.co/secretstream)
-* RPC interoparability with JS through [go-muxprc](https://godoc.org/go.cryptoscope.co/muxrpc)
+* RPC interoperability with JS through [go-muxprc](https://godoc.org/go.cryptoscope.co/muxrpc)
 * Embedded datastore, no external database required ([margaret](https://godoc.org/go.cryptoscope.co/margaret) and [librarian](https://godoc.org/go.cryptoscope.co/librarian), similar to [flumedb](https://github.com/flumedb/flumedb))
 * [pull-stream](https://pull-stream.github.io)-like abstraction (called [luigi](https://godoc.org/go.cryptoscope.co/luigi)) to pipe between rpc and database.
-* [go ssb-refs](https://godoc.org/go.mindeco.de/ssb-refs) utility types and parsing for message and feed identtifers.
+* [go ssb-refs](https://godoc.org/go.mindeco.de/ssb-refs) utility types and parsing for message and feed identifiers.
 * [go ssb-multiserver](https://godoc.org/go.mindeco.de/ssb-multiserver) [address](https://github.com/ssbc/multiserver-address) parsing.
 
 ## Contact
