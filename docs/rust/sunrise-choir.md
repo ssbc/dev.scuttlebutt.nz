@@ -28,7 +28,7 @@ println!("{}", aruna.public.as_base64());
 // swNgjge1NbO3OzRP9gz43JMuu2IGRyJzoTVrZqp11a8=
 ```
 
-Alternatively, we can load or create a key that's saved in a file. These methods allow compatibility with keyfiles conforming to the Javascript implementation. We'll call this identity **Benedict**.
+Alternatively, we can load or create a key that's saved in a file. These methods allow compatibility with keyfiles conforming to the JavaScript implementation. We'll call this identity **Benedict**.
 
 ```rust
 use ssb_keyfile::{Keypair, KeyFileError};

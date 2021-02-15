@@ -2,7 +2,7 @@
 
 ## Introduction
 
-[Kuska-ssb](https://github.com/Kuska-ssb) implements a subset of the existing Javascript functionality. The majority of the code lives in the [ssb](https://github.com/Kuska-ssb/ssb) repository, with a separate [handshake](https://github.com/Kuska-ssb/handshake) repository containing the Secure Scuttlebutt handshake and boxstream library.
+[Kuska-ssb](https://github.com/Kuska-ssb) implements a subset of the existing JavaScript functionality. The majority of the code lives in the [ssb](https://github.com/Kuska-ssb/ssb) repository, with a separate [handshake](https://github.com/Kuska-ssb/handshake) repository containing the Secure Scuttlebutt handshake and boxstream library.
 
 If you are not familiar with the [Rust programming language](https://www.rust-lang.org/), please visit the [Getting started](https://www.rust-lang.org/learn/get-started) page to learn more. The [Rust programming language book](https://doc.rust-lang.org/book/) and [Rust By Example](https://doc.rust-lang.org/stable/rust-by-example/) are both excellent learning guides.
 
@@ -32,7 +32,7 @@ let ayami = OwnedIdentity::create();
 // }
 ```
 
-Alternatively, we can load or create a key that's saved in a file. These methods allow compatibility with keyfiles conforming to the Javascript implementation. Loading the local secret produces an identity `struct` of type `OwnedIdentity`. We'll call this identity **Bongani**.
+Alternatively, we can load or create a key that's saved in a file. These methods allow compatibility with keyfiles conforming to the JavaScript implementation. Loading the local secret produces an identity `struct` of type `OwnedIdentity`. We'll call this identity **Bongani**.
 
 ```rust
 // read from "{}/.ssb/secret" where "{}" is home directory

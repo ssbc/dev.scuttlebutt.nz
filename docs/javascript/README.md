@@ -1,4 +1,4 @@
-# Javascript stack
+# JavaScript stack
 
 ## Introduction
 
@@ -169,7 +169,7 @@ You may have noticed that entities in SSB are referenced with a string starting 
 - **`&`** -- Blob
 - **`@`** -- Feed
 
-This is followed by a base64-encoded integer and a suffix that describes what kind of data this is. We _could_ write gourmet parsers for this every time we need parse an SSB reference, but it's so common that we have a module dedicated to solving this exact problem: [SSB-Ref](https://github.com/ssb-js/ssb-ref).
+This is followed by a base64-encoded integer and a suffix that describes what kind of data this is. We _could_ write gourmet parsers for this every time we need to parse an SSB reference, but it's so common that we have a module dedicated to solving this exact problem: [SSB-Ref](https://github.com/ssb-js/ssb-ref).
 
 ```javascript
 const ssbRef = require("ssb-ref");
@@ -188,13 +188,13 @@ We've got our keys, we know how to make messages, our feed seems to be valid -- 
 const secretStack = require("secret-stack");
 ```
 
-Secret-Stack is painfully unopinionated, and is usually wrapped with lots of sugary helpers. Don't worry, this explicit configuration is mostly for educational purposes and you will rarely have to hink about this.
+Secret-Stack is painfully unopinionated, and is usually wrapped with lots of sugary helpers. Don't worry, this explicit configuration is mostly for educational purposes and you will rarely have to think about this.
 
 ### Key
 
 The 'app key', also called an 'SHS key', or 'network identifier' in the [handshake protocol documentation](https://ssbc.github.io/scuttlebutt-protocol-guide/#handshake), is a 32-byte key used to keep Secret-Stack networks isolated from each other. If you're building a network of temperature sensors on Secure Scuttlebutt you probably don't want to be peering with people sharing source code or building a social network (👋), so when you configure initialize Secret-Stack you have to supply an app key.
 
-We'll use the most common app key, which is used for the offline-first social network that might be familiar with:
+We'll use the most common app key, which is used for the offline-first social network that you might be familiar with:
 
 ```javascript
 const stack = secretStack({
@@ -308,7 +308,7 @@ It's important to know how this works -- we use a module called [Multiserver](ht
 
 ## MuxRPC
 
-Unfortunately these streams aren't very useful by themselves -- we use MuxRPC, an pluggable remote procedure call framework, which gives us the ability to send and receive procedures through Multiserver streams. There are at least four types of procedures:
+Unfortunately these streams aren't very useful by themselves -- we use MuxRPC, a pluggable remote procedure call framework, which gives us the ability to send and receive procedures through Multiserver streams. There are at least four types of procedures:
 
 - **async** -- Asynchronous, wait for a response.
 - **sync** -- Synchronous, response is immediate when called via process and an alias for 'async' when called through the network.
