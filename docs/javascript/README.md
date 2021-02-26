@@ -10,6 +10,7 @@ You should be familiar with JavaScript, Node.js, and at least the basics mention
 - **Secret Handshake (SHS)** is an authenticated key exchange protocol (like TLS).
 - **MuxRPC** is a communication protocol (like HTTP).
 - **Multiserver address** is [usually] a combined address and public key (like HTTPS with certificate pinning).
+- **DB** is where messages are stored locally and from where they can be queried.
 
 ## SSB-Keys
 
@@ -317,6 +318,102 @@ Unfortunately these streams aren't very useful by themselves -- we use MuxRPC, a
 - **duplex** -- Two-way stream, returns a duplex stream.
 
 As mentioned earlier, all peers implement a 'manifest' procedure (sync), which returns a list of procedures and their types.
+
+## SSB-DB2
+
+We know how to create messages, now we need a place to store these messages so they can be exchanged with other peers and queried locally. The first database for the javascript stack was a secret stack plugin called [ssb-db](https://github.com/ssbc/ssb-db/). ssb-db is built on top of [flume](https://github.com/flumedb/) which is a framework for writing indexes and reduced views on top of an append-only [log](https://github.com/flumedb/flumelog-offset). Flume, while being quite solid, suffers from a number of problems such as slow indexing performance and a special custom query syntax. The [ngi pointer team](https://github.com/ssb-ngi-pointer/) set out to design a new database called [ssb-db2](https://github.com/ssb-ngi-pointer/ssb-db2) that among other things deals with these two problems. In db2, messages are stored in [BIPF](https://github.com/ssbc/bipf) in a new [log](https://github.com/ssb-ngi-pointer/async-append-only-log). BIPF allows indexes and queries to select only the fields they are interested in. This combined with a faster log gives roughly [10x improvement](https://github.com/ssb-ngi-pointer/db-benchmarks) in indexing speed. To query stored messages, [JITDB](https://github.com/ssb-ngi-pointer/jitdb) was built with a query syntax much closer to SQL or LINQ.
+
+Let see how to query for the latest 10 (sorted by timestamp) posts by a certain author:
+
+```javascript
+const SecretStack = require('secret-stack')
+const ssbKeys = require('ssb-keys')
+const caps = require('ssb-caps')
+const os = require('os')
+const path = require('path')
+const {and, type, author, paginate, descending, toCallback} = require('ssb-db2/operators')
+
+const sbot = SecretStack({ caps })
+  .use(require('ssb-db2'))
+  .call(null, {
+    path: path.join(os.homedir(), '.ssb'),
+    keys: ssbKeys.loadOrCreateSync(path.join(os.homedir(), '.ssb', 'secret'))
+  })
+
+sbot.db.query(
+  and(
+   type('post'),
+   author('@6CAxOI3f+LUOVrbAl0IemqiS7ATpQvr9Mdw9LC4+Uv0=.ed25519')
+  ),
+  descending(),
+  paginate(10),
+  toCallback((err, msgs) => {
+    console.log(msgs)
+    sbot.close()
+  })
+)
+// {
+//   results: [{
+//     key: '%eR84PjHsUuVu2AgQmKjsMru+O4tzr2LwB05RnobN1n8=.sha256',
+//     value: [Object],
+//     timestamp: 1613057102824
+//   }, ...],
+//   total: 1987,
+//   duration: 337
+// }
+```
+
+This query used two indexes: `post` and `author`. The first time you run this query, it will take a little longer because it needs to create the indexes first. This is where the JIT (just in time) comes into play. The way it works is that under the hood [`type`](https://github.com/ssb-ngi-pointer/ssb-db2/blob/580eaedef0d0696d9e279709147b69696710144e/operators/index.js#L27) uses a [seeker](https://github.com/ssb-ngi-pointer/ssb-db2/blob/580eaedef0d0696d9e279709147b69696710144e/seekers.js#L28) function to fetch out exactly the field of the message it is interested in while building the index. The result is then stored as a bit vector (1 or 0 if the input value was matched). Author is a [prefix index](https://github.com/ssb-ngi-pointer/jitdb#prefix-indexes) where one index can answer multiple values, while still returning a bit vector. These bit vector can then be combined using the operators `and` `or`.
+
+Sometimes you want to query for something a little more complicated. This could be [mentions](https://github.com/ssb-ngi-pointer/ssb-db2#full-mentions) (an array properly on a message), for this purpose ssb-db2 has the ability to create level db backed indexes that can be combined with other jitdb indexes like this:
+
+```javascript
+const SecretStack = require('secret-stack')
+const ssbKeys = require('ssb-keys')
+const caps = require('ssb-caps')
+const os = require('os')
+const path = require('path')
+
+const {and, type, author, paginate, descending, toCallback} = require('ssb-db2/operators')
+
+const sbot = SecretStack({ caps })
+  .use(require('ssb-db2'))
+  .use(require('ssb-db2/full-mentions')) // include index
+  .call(null, {
+    path: path.join(os.homedir(), '.ssb'),
+    keys: ssbKeys.loadOrCreateSync(path.join(os.homedir(), '.ssb', 'secret'))
+  })
+
+const {fullMentions} = sbot.db.operators
+
+sbot.db.query(
+  and(
+   type('post'),
+   author('@6CAxOI3f+LUOVrbAl0IemqiS7ATpQvr9Mdw9LC4+Uv0=.ed25519'),
+   fullMentions('@QlCTpvY7p9ty2yOFrv1WU1AE88aoQc4Y7wYal7PFc+w=.ed25519')
+  ),
+  descending(),
+  paginate(10),
+  toCallback((err, msgs) => {
+    console.log(msgs)
+    sbot.close()
+  })
+)
+// {
+//   results: [{
+//     key: '%urkKJmW7VXq8mF1VPK2f5LFYjKOxvxPegPRT0Z4R2VU=.sha256',
+//     value: [Object],
+//     timestamp: 1603031514522
+//   }, ...],
+//   total: 21,
+//   duration: 530
+// }
+```
+
+The level db indexes can also be used to build reduced states, such as an index for [self-assigned](https://github.com/ssb-ngi-pointer/ssb-db2#about-self) about messages.
+
+You can [write your own](https://github.com/ssb-ngi-pointer/ssb-db2#your-own-leveldb-index-plugin) leveldb index plugins or provide your own jitdb [operators](https://github.com/ssb-ngi-pointer/ssb-db2/blob/master/operators/index.js) for your application specific messages.
+
 
 ## Plugins
 
