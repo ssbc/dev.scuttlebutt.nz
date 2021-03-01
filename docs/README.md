@@ -1,4 +1,4 @@
-# dev.scuttlebutt.nz
+# Scuttlebutt Treasure Map for Developers
 
 ## Introduction
 
