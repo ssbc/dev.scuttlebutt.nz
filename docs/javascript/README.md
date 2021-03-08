@@ -365,7 +365,7 @@ sbot.db.query(
 
 This query used two indexes: `post` and `author`. The first time you run this query, it will take a little longer because it needs to create the indexes first. This is where the JIT (just in time) comes into play. The way it works is that under the hood [`type`](https://github.com/ssb-ngi-pointer/ssb-db2/blob/580eaedef0d0696d9e279709147b69696710144e/operators/index.js#L27) uses a [seeker](https://github.com/ssb-ngi-pointer/ssb-db2/blob/580eaedef0d0696d9e279709147b69696710144e/seekers.js#L28) function to fetch out exactly the field of the message it is interested in while building the index. The result is then stored as a bit vector (1 or 0 if the input value was matched). Author is a [prefix index](https://github.com/ssb-ngi-pointer/jitdb#prefix-indexes) where one index can answer multiple values, while still returning a bit vector. These bit vector can then be combined using the operators `and` `or`.
 
-Tim Robinson have a [repo](https://github.com/timjrobinson/ssb-db2-examples) with a lot of great examples of queries using db2.
+Tim Robinson has a [repo](https://github.com/timjrobinson/ssb-db2-examples) with a lot of great examples of queries using db2.
 
 Sometimes you want to query for something a little more complicated. This could be [mentions](https://github.com/ssb-ngi-pointer/ssb-db2#full-mentions) (an array properly on a message), for this purpose ssb-db2 has the ability to create level db backed indexes that can be combined with other jitdb indexes like this:
 
