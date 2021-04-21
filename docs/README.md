@@ -19,3 +19,5 @@ You should be familiar with JavaScript, Node.js, and at least the basics mention
 * The original implementation in [node.js](javascript/).
 * An implementation in [Go](golang/).
 * Several [Rust](rust/) implementations.
+* An implementation in [Python](python/). 
+
