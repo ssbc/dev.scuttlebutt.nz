@@ -6,18 +6,15 @@
 - ssb-blobs
 - ssb-db
 - ssb-friends
-- ssb-gossip
+- ssb-conn
 - ssb-logging
 - ssb-master
-- ssb-no-auth
-- ssb-query
 - ssb-replicate
-- ssb-unix-socket
 
 ## Often used
 
+- ssb-db2
 - ssb-about
-- ssb-conn
 - ssb-ebt
 - ssb-lan
 - ssb-links
@@ -27,7 +24,11 @@
 - ssb-plugins
 - ssb-private
 - ssb-search
+- ssb-no-auth
+- ssb-query
 - ssb-suggest
+- ssb-suggest-lite
+- ssb-unix-socket
 - ssb-ws
 
 ## Sometimes used
@@ -49,6 +50,7 @@
 - ssb-room
 - ssb-serve-blobs
 - ssb-server-channel
+- ssb-gossip
 - ssb-tags
 - ssb-threads
 - ssb-unread
