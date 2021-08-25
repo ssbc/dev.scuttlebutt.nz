@@ -155,8 +155,9 @@ One way to think about the `multilog` package:
 
 A multilog can be seen as a _[tree](https://en.wikipedia.org/wiki/Tree_(data_structure))-like_
 index. The multilog itself is a log—or the root of the tree—which leads to other logs. These
-other logs are called _sublogs_, and each sublog has many leaves, each corresponding to some
-message, depending on the particular type of data being indexed by the multilog in question.
+other logs are called _sublogs_, and each sublog has many leaves. Each leaf corresponds to some
+message. What type of message is stored depends on the particular type of data being indexed by the multilog in question (all follow messages by `<peer>`, for example).
+
 This multilog tree can then be thought of as having a depth of 2: 
 
 ```
