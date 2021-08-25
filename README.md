@@ -2,7 +2,7 @@
 
 Meta documentation for the Scuttlebutt ecosystem.
 
-:book: **Hosted online at dev.scuttlebutt.nz** :book:
+:book: **Hosted online at [dev.scuttlebutt.nz](https://dev.scuttlebutt.nz)** :book:
 
 Includes developer documentation for the [Node.js](https://dev.scuttlebutt.nz/#/javascript/), [Go](https://dev.scuttlebutt.nz/#/golang/), [Rust](https://dev.scuttlebutt.nz/#/rust/) and [Python](https://dev.scuttlebutt.nz/#/python/) implementations of the Scuttlebutt Protocol.
 
