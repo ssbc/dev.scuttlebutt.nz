@@ -184,7 +184,7 @@ func ex() {
   p13zsa, err := refs.ParseFeedRef("@p13zSAiOpguI9nsawkGijsnMfWmFd5rlUNpzekEE+vI=.ed25519")
   check(err)
 
-  // get the librarian address for this reference and open
+  // get the address for this reference and open the log
   justTheUsersLog, err := s.Users.Get(p13zsa.StoredAddr())
   check(err)
 
