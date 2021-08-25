@@ -11,7 +11,7 @@ If you are not familiar with the [Go programming language](https://golang.org), 
 
 ## Packages Overview
 
-This section serves as a treasure map, outlining points of interest, into the [monorepo](https://github.com/cryptoscope/ssb/) the first time.
+This section serves as a treasure map, outlining points of interest (important packages & folders) in the go-ssb [monorepo](https://github.com/cryptoscope/ssb/).
 
 ### [`cmd/`](https://github.com/cryptoscope/ssb/tree/master/cmd/)
 
