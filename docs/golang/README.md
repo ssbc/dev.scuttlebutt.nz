@@ -226,7 +226,7 @@ Listed below are modules and packages that are not part of the [`go.cryptoscope.
 
 * The [secret-handshake](https://secret-handshake.club) key exchange is available as [secretstream](https://godoc.org/go.cryptoscope.co/secretstream)
 * RPC interoperability with JS through [go-muxprc](https://godoc.org/go.cryptoscope.co/muxrpc)
-* Embedded datastore, no external database required ([margaret](https://godoc.org/go.cryptoscope.co/margaret) and [librarian](https://godoc.org/go.cryptoscope.co/librarian), similar to [flumedb](https://github.com/flumedb/flumedb))
+* Embedded datastore, no external database required ([margaret](https://godoc.org/go.cryptoscope.co/margaret) and [`margaret/indexes`](https://godoc.org/go.cryptoscope.co/margaret/indexes), similar to [flumedb](https://github.com/flumedb/flumedb))
 * [pull-stream](https://pull-stream.github.io)-like abstraction (called [luigi](https://godoc.org/go.cryptoscope.co/luigi)) to pipe between rpc and database.
 * [go ssb-refs](https://godoc.org/go.mindeco.de/ssb-refs) utility types and parsing for message and feed identifiers.
 * [go ssb-multiserver](https://godoc.org/go.mindeco.de/ssb-multiserver) [address](https://github.com/ssbc/multiserver-address) parsing.
