@@ -6,21 +6,21 @@ Go-SSB implements most of the existing JavaScript functionality but is less modu
 
 The import path for the code is `go.cryptoscope.co/ssb`.
 
-If you are not familiar with the [Go programming language](https://golang.org), I suggest you get started with the [guided tour](https://tour.golang.org/welcome/1).
+If you are not familiar with the [Go programming language](https://golang.org), you can get started with learning using the official [guided tour](https://tour.golang.org/welcome/1).
 
 
 ## Packages Overview
 
-This should serve as guardrails when looking into the repo for the first time.
+This section serves as a treasure map, outlining points of interest (important packages & folders) in the go-ssb [monorepo](https://github.com/cryptoscope/ssb/).
 
-### cmd
+### [`cmd/`](https://github.com/cryptoscope/ssb/tree/master/cmd/)
 
 By coding convention, this contains the executable tools. Most importantly these two:
 
 * `go-sbot` which hosts the database and p2p server.
 * `sbotcli` a muxrpc client to do common tasks, like publishing a message or querying messages.
 
-### Message
+### [`message/`](https://github.com/cryptoscope/ssb/tree/master/message/)
 
 Message contains all the code to create and verify messages.
 
@@ -30,7 +30,7 @@ The current established format is
 * [message/legacy](https://pkg.go.dev/go.cryptoscope.co/ssb/message/legacy) - how to encode and verify [the current ssb messages](https://spec.scuttlebutt.nz/feed/messages.html)
 * message/multimsg - encoding multiple kinds of messages to disk (see _Database Concept Overview_ below)
 
-### Plugins
+### [`plugins/`](https://github.com/cryptoscope/ssb/tree/master/plugins/)
 
 Plugins supply muxrpc handlers to query the database in certain ways.
 They also implement other sub-protocols like ssb-blobs.
@@ -58,9 +58,9 @@ They also implement other sub-protocols like ssb-blobs.
 
 
 
-### Sbot
+### [`sbot/`](https://github.com/cryptoscope/ssb/tree/master/sbot/)
 
-This package ties together network, repo and plugins like graph and blobs into a large server that offers data-access APIs and background replication. It's name dates back to a time where ssb-server was still called scuttlebot, in short: sbot.
+Package `sbot` ties together network, repo and plugins like graph and blobs into a large server that offers data-access APIs and background replication. It's name dates back to a time where ssb-server was still called scuttlebot, in short: sbot.
 
 It offers a flexible [functional options API](https://pkg.go.dev/go.cryptoscope.co/ssb/sbot#Option) to tune the server as desired. This includes file locations, network and signing keypairs, local discovery behavior and plugin selection.
 
@@ -88,13 +88,13 @@ func ex() {
 ```
 
 
-### Repo, indexes and multilogs
+### Triplets: [`repo/`](https://github.com/cryptoscope/ssb/tree/master/repo), [`indexes/`](https://github.com/cryptoscope/ssb/tree/master/indexes) and [`multilogs/`](https://github.com/cryptoscope/ssb/tree/master/multilogs)
 
-* repo - contains utility modules to open offset logs and create different kinds of indexes
-* indexes - contains functions to create indexing  for `get(%ref) -> message`. Also contains a utility to open the contact trust graph using the `repo` and `graph` packages.
-* multilogs - currently contains the indexing functions for the `by user` and `private readable` multilogs (See the _MultiLog_ section in _Database concept overview_ for more)
+* `repo/` - contains utility modules to open offset logs and create different kinds of indexes
+* `indexes/` - contains functions to create indexing  for `get(%ref) -> message`. Also contains a utility to open the contact trust graph using the `repo` and `graph` packages.
+* `multilogs/` - currently contains the indexing functions for the `by user` and `private readable` multilogs (See the _MultiLog_ section in _Database concept overview_ for more)
 
-### Misc
+### The rest of the gang
 
 * [blobstore](https://pkg.go.dev/go.cryptoscope.co/ssb/blobstore) - the filesystem storage and sympathy managment for [ssb-blobs](https://github.com/ssbc/ssb-blobs)
 * network - a utility module for dialing and listening to secret-handshake powered muxrpc connections
@@ -103,12 +103,12 @@ func ex() {
 * [invite](https://pkg.go.dev/go.cryptoscope.co/ssb/invite) - This package contains functions for parsing invite codes and dialing a pub as a guest to redeem a token. The muxrpc handlers and storage are found in `plugins/legacyinvite`.
 * [private](https://pkg.go.dev/go.cryptoscope.co/ssb/private) - utility functions to de- and encrypted messages. Maps to `box()` and `unbox()` in [ssb-keys](https://github.com/ssbc/ssb-keys).
 
-### Tests
+### On Testing: [`tests/`](https://github.com/cryptoscope/ssb/tree/master/tests/)
 
-While most folders contain `_test.go` files where functionallity is tested as unit tests, this folder
+While most folders contain `_test.go` files where functionality is tested as unit tests, this folder
 contains sepcial code to run tests against the JavaScript implementation.
 
-## Database concept Overview
+## Database: Conceptual overview
 
 Go-SSB's choice of data storage and retrieval is very much inspired by ssb-db / flumedb.
 
@@ -136,21 +136,43 @@ The `graph` package goes through all the `type:contact` messages and just stores
 
 The `plugins2/names` package implements the same muxrpc interface as [ssb-names](https://github.com/ssbc/ssb-names). It does a similar thing to `graph` but for `type:about` messages and the name, image and description information in them.
 
-### MultiLog
+### [`margaret/multilog`](https://pkg.go.dev/go.cryptoscope.co/margaret)
 
-We wanted to have a unified way to access different kinds of _sub logs_ (of the big receive log, for instance).
+We wanted to have a unified way to access different kinds of sublogs, that is, logs-as-slices into a larger log. One example: accessing parts of the big receive log (the posts by one particular feed, for instance).
 
-Enter [MultiLog](https://pkg.go.dev/go.cryptoscope.co/margaret/multilog), it returns `margaret.Log`s for specific addresses.
+Enter [MultiLog](https://pkg.go.dev/go.cryptoscope.co/margaret/multilog), which returns `margaret.Log`s for specific addresses.
 
-#### Implementation details
+Package `multilog` is one of a few ways that go-ssb creates an overarching structure (indexes and views) of the
+messages being received from all over the scuttleverse. Another prominent indexing solution is
+the [`margaret/indexes`](https://godocs.io/go.cryptoscope.co/margaret/indexes) package, which
+more or less functions as a key-value store. One of the differences between `margaret/indexes` and
+`margaret/multilog`: the former stores arbitrary data (think: strings of your choosing), while
+the latter only stores (references to) ssb messages.
 
-The first attempt we made stored an entry like `@publicKey:N -> ReceiveSeqM` (where N is the logical sequence entry on the feed and M the sequence of the message in the receive log) in a key-value database (`margaret/multilog/badger`). This worked but came with a lot of churn since the values are quite small, additionally keys are large and redundant.
+#### A `multilog` explanation
 
-A newer approach is to store the set of receivelog sequences as a special kind of [Bitmap](https://en.wikipedia.org/wiki/Bitmap). (tl;dr: You can imagine these as a compressed array of integers.) This is advantageous not only because we only store one bitmap for all the messages in a set (like `by author:x` or `by type:y`) but also because it allows us to use them as compound indexes since they can be logically combined via boolean algebra (`x AND y` gives us the intersection, `x OR y` gives us the union) since they all map to the same messages in the receive log.
+One way to think about the `multilog` package: 
 
-#### Example Query by User
+A multilog can be seen as a _[tree](https://en.wikipedia.org/wiki/Tree_(data_structure))-like_
+index. The multilog itself is a log—or the root of the tree—which leads to other logs. These
+other logs are called _sublogs_, and each sublog has many leaves. Each leaf corresponds to some
+message. What type of message is stored depends on the particular type of data being indexed by the multilog in question (i.e. all `type:contact` messages, all messages by `<peer>`, etc.).
 
-A simple example would be accessing a single users feed, identified by it's public key.
+This multilog tree can then be thought of as having a depth of 2: 
+
+```
+root (multilog)              // depth 0
+    -> sublog (margaret.Log) // depth 1
+        -> leaf (message)    // depth 2
+        -> leaf (message)
+        -> leaf (message)
+```
+
+In other words: one multilog has many sublogs, and each sublog has many messages.
+
+#### Example: Query by User
+
+A standalone example of using `multilog` would be accessing a single users feed, as identified by its public key.
 
 ```go
 
@@ -162,7 +184,7 @@ func ex() {
   p13zsa, err := refs.ParseFeedRef("@p13zSAiOpguI9nsawkGijsnMfWmFd5rlUNpzekEE+vI=.ed25519")
   check(err)
 
-  // get the librarian address for this reference and open
+  // get the address for this reference and open the log
   justTheUsersLog, err := s.Users.Get(p13zsa.StoredAddr())
   check(err)
 
@@ -191,13 +213,20 @@ func ex() {
 }
 ```
 
+#### Multilog implementation details
+
+The first attempt we made stored an entry like `@publicKey:N -> ReceiveSeqM` (where N is the logical sequence entry on the feed and M the sequence of the message in the receive log) in a key-value database (`margaret/multilog/badger`). This worked but came with a lot of churn since the values are quite small, additionally keys are large and redundant.
+
+A newer approach is to store the set of receivelog sequences as a special kind of [Bitmap](https://en.wikipedia.org/wiki/Bitmap). (tl;dr: You can imagine these as a compressed array of integers.) This is advantageous not only because we only store one bitmap for all the messages in a set (like `by author:x` or `by type:y`) but also because it allows us to use them as compound indexes since they can be logically combined via boolean algebra (`x AND y` gives us the intersection, `x OR y` gives us the union) since they all map to the same messages in the receive log.
+
+
 ## Links
 
-Here are modules/packages that are not part of the core mono repository:
+Listed below are modules and packages that are not part of the [`go.cryptoscope.co/ssb`](https://github.com/cryptoscope/ssb/) monorepo:
 
 * The [secret-handshake](https://secret-handshake.club) key exchange is available as [secretstream](https://godoc.org/go.cryptoscope.co/secretstream)
 * RPC interoperability with JS through [go-muxprc](https://godoc.org/go.cryptoscope.co/muxrpc)
-* Embedded datastore, no external database required ([margaret](https://godoc.org/go.cryptoscope.co/margaret) and [librarian](https://godoc.org/go.cryptoscope.co/librarian), similar to [flumedb](https://github.com/flumedb/flumedb))
+* Embedded datastore, no external database required ([margaret](https://godoc.org/go.cryptoscope.co/margaret) and [`margaret/indexes`](https://godoc.org/go.cryptoscope.co/margaret/indexes), similar to [flumedb](https://github.com/flumedb/flumedb))
 * [pull-stream](https://pull-stream.github.io)-like abstraction (called [luigi](https://godoc.org/go.cryptoscope.co/luigi)) to pipe between rpc and database.
 * [go ssb-refs](https://godoc.org/go.mindeco.de/ssb-refs) utility types and parsing for message and feed identifiers.
 * [go ssb-multiserver](https://godoc.org/go.mindeco.de/ssb-multiserver) [address](https://github.com/ssbc/multiserver-address) parsing.
