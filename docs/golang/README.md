@@ -147,7 +147,7 @@ messages being received from all over the scuttleverse. Another prominent indexi
 the [`margaret/indexes`](https://godocs.io/go.cryptoscope.co/margaret/indexes) package, which
 more or less functions as a key-value store. One of the differences between `margaret/indexes` and
 `margaret/multilog`: the former stores arbitrary data (think: strings of your choosing), while
-the latter only stores ssb messages.
+the latter only stores (references to) ssb messages.
 
 #### A `multilog` explanation
 
@@ -156,7 +156,7 @@ One way to think about the `multilog` package:
 A multilog can be seen as a _[tree](https://en.wikipedia.org/wiki/Tree_(data_structure))-like_
 index. The multilog itself is a log—or the root of the tree—which leads to other logs. These
 other logs are called _sublogs_, and each sublog has many leaves. Each leaf corresponds to some
-message. What type of message is stored depends on the particular type of data being indexed by the multilog in question (all follow messages by `<peer>`, for example).
+message. What type of message is stored depends on the particular type of data being indexed by the multilog in question (i.e. all `type:contact` messages, all messages by `<peer>`, etc.).
 
 This multilog tree can then be thought of as having a depth of 2: 
 
