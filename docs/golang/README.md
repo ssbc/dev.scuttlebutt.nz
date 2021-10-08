@@ -219,6 +219,102 @@ The first attempt we made stored an entry like `@publicKey:N -> ReceiveSeqM` (wh
 
 A newer approach is to store the set of receivelog sequences as a special kind of [Bitmap](https://en.wikipedia.org/wiki/Bitmap). (tl;dr: You can imagine these as a compressed array of integers.) This is advantageous not only because we only store one bitmap for all the messages in a set (like `by author:x` or `by type:y`) but also because it allows us to use them as compound indexes since they can be logically combined via boolean algebra (`x AND y` gives us the intersection, `x OR y` gives us the union) since they all map to the same messages in the receive log.
 
+## Snippets
+Code examples and snippets for commonly useful tasks, especially when dealing with
+[metafeeds](https://github.com/ssb-ngi-pointer/ssb-meta-feeds-spec). The examples are
+incomplete snippets, aimed at helping get developers over conceptuals bumps by demonstrating
+the gist of a task without creating a full on example program.
+
+**Note**: Some of the snippets below are demonstrating the expected behaviour using the assertion package
+`testify`:
+
+```golang
+import `github.com/stretchr/testify/require`
+// ...
+func TestAnExampleFunction (t *testing)
+r := require.New(t)
+```
+
+#### Signing an announcement with the root metafeed's key
+```golang
+announcement := legacy.NewMetafeedAnnounce(kpMetafeed.ID(), kpMain.ID())
+signedAnnouncement, err := announcement.Sign(kpMetafeed.PrivateKey, nil)
+r.NoError(err)
+```
+
+
+#### Verify mf announcement is correct
+```golang
+_, ok := legacy.VerifyMetafeedAnnounce(signedMsg, theUpgradingOne.ID(), &hmacSecret)
+r.True(ok, "verify failed")
+```
+
+
+#### Creating an announcement message
+```golang
+ma := legacy.NewMetafeedAnnounce(bot.KeyPair.ID(), subfeed)
+
+signedMsg, err := ma.Sign(bot.KeyPair.Secret(), nil)
+r.NoError(err)
+
+ref, err := bot.MetaFeeds.Publish(subfeed, signedMsg)
+r.NoError(err)
+
+msg, err := bot.Get(ref)
+r.NoError(err)
+t.Log("content:", string(msg.ContentBytes()))
+
+mm, ok := msg.(*multimsg.MultiMessage)
+r.True(ok, "wrong type: %T", msg)
+
+lm, ok := mm.AsLegacy()
+r.True(ok)
+```
+
+#### Add a main feed to the metafeed `metafeed/add/existing`
+```golang
+mfAddExisting := metamngmt.NewAddExistingMessage(kpMetafeed.ID(), kpMain.ID(), "main")
+mfAddExisting.Tangles["metafeed"] = refs.TanglePoint{Root: nil, Previous: nil}
+
+// sign the bendybutt message with mf.Secret + main.Secret
+signedAddExistingContent, err := metafeed.SubSignContent(kpMain.Secret(), mfAddExisting)
+if err != nil {
+	return err
+}
+mf.publish.Append(signedAddExistingContent)
+```
+
+#### Get a feed using a feedref
+```golang
+var createGetFeed = func(bot *Sbot) func(feedId refs.FeedRef) margaret.Log {
+	return func(feedId refs.FeedRef) margaret.Log {
+		feed, err := bot.Users.Get(storedrefs.Feed(feedId))
+		r.NoError(err)
+		return feed
+	}
+}
+```
+
+#### Register indexes (and then get them)
+```golang
+err = bot.MetaFeeds.RegisterIndex(mfId, mainFeedRef, "about")
+r.NoError(err)
+
+err = bot.MetaFeeds.RegisterIndex(mfId, mainFeedRef, "contact")
+r.NoError(err)
+
+// get the actual index feeds so we can assert on them
+aboutIndexId, err := bot.MetaFeeds.GetOrCreateIndex(mfId, mainFeedRef, "index", "about")
+r.NoError(err)
+aboutIndex := getFeed(aboutIndexId)
+checkSeq(aboutIndex, int(margaret.SeqEmpty))
+
+contactIndexId, err := bot.MetaFeeds.GetOrCreateIndex(mfId, mainFeedRef, "index", "contact")
+r.NoError(err)
+contactIndex := getFeed(contactIndexId)
+checkSeq(contactIndex, int(margaret.SeqEmpty))
+```
+
 
 ## Links
 
