@@ -236,55 +236,6 @@ func TestAnExampleFunction (t *testing) {
   // use stuff like r.Equal(..) or r.NoError(...) to your hearts cotent
 ```
 
-#### Signing an announcement with the root metafeed's key
-```golang
-announcement := legacy.NewMetafeedAnnounce(kpMetafeed.ID(), kpMain.ID())
-signedAnnouncement, err := announcement.Sign(kpMetafeed.PrivateKey, nil)
-r.NoError(err)
-```
-
-
-#### Verify mf announcement is correct
-```golang
-_, ok := legacy.VerifyMetafeedAnnounce(signedMsg, theUpgradingOne.ID(), &hmacSecret)
-r.True(ok, "verify failed")
-```
-
-
-#### Creating an announcement message
-```golang
-ma := legacy.NewMetafeedAnnounce(bot.KeyPair.ID(), subfeed)
-
-signedMsg, err := ma.Sign(bot.KeyPair.Secret(), nil)
-r.NoError(err)
-
-ref, err := bot.MetaFeeds.Publish(subfeed, signedMsg)
-r.NoError(err)
-
-msg, err := bot.Get(ref)
-r.NoError(err)
-t.Log("content:", string(msg.ContentBytes()))
-
-mm, ok := msg.(*multimsg.MultiMessage)
-r.True(ok, "wrong type: %T", msg)
-
-lm, ok := mm.AsLegacy()
-r.True(ok)
-```
-
-#### Add a main feed to the metafeed `metafeed/add/existing`
-```golang
-mfAddExisting := metamngmt.NewAddExistingMessage(kpMetafeed.ID(), kpMain.ID(), "main")
-mfAddExisting.Tangles["metafeed"] = refs.TanglePoint{Root: nil, Previous: nil}
-
-// sign the bendybutt message with mf.Secret + main.Secret
-signedAddExistingContent, err := metafeed.SubSignContent(kpMain.Secret(), mfAddExisting)
-if err != nil {
-	return err
-}
-mf.publish.Append(signedAddExistingContent)
-```
-
 #### Register indexes (and then get them)
 ```golang
 err = bot.MetaFeeds.RegisterIndex(mfId, mainFeedRef, "about")
