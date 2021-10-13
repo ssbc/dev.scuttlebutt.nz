@@ -219,6 +219,122 @@ The first attempt we made stored an entry like `@publicKey:N -> ReceiveSeqM` (wh
 
 A newer approach is to store the set of receivelog sequences as a special kind of [Bitmap](https://en.wikipedia.org/wiki/Bitmap). (tl;dr: You can imagine these as a compressed array of integers.) This is advantageous not only because we only store one bitmap for all the messages in a set (like `by author:x` or `by type:y`) but also because it allows us to use them as compound indexes since they can be logically combined via boolean algebra (`x AND y` gives us the intersection, `x OR y` gives us the union) since they all map to the same messages in the receive log.
 
+## Snippets
+Code examples and snippets for commonly useful tasks, especially when dealing with
+[metafeeds](https://github.com/ssb-ngi-pointer/ssb-meta-feeds-spec). The examples are
+incomplete snippets, aimed at helping get developers over conceptuals bumps by demonstrating
+the gist of a task without creating a full on example program.
+
+**Note**: Some of the snippets below are demonstrating the expected behaviour using the assertion package
+[testify](https://pkg.go.dev/github.com/stretchr/testify/require):
+
+```golang
+import `github.com/stretchr/testify/require`
+// ...
+func TestAnExampleFunction (t *testing) {
+  r := require.New(t)
+  // use stuff like r.Equal(..) or r.NoError(...) to your hearts cotent
+```
+
+#### Register indexes (and then get them)
+```golang
+err = bot.MetaFeeds.RegisterIndex(mfId, mainFeedRef, "about")
+r.NoError(err)
+
+err = bot.MetaFeeds.RegisterIndex(mfId, mainFeedRef, "contact")
+r.NoError(err)
+
+// get the actual index feeds so we can assert on them
+aboutIndexId, err := bot.MetaFeeds.GetOrCreateIndex(mfId, mainFeedRef, "index", "about")
+r.NoError(err)
+aboutIndex := getFeed(aboutIndexId)
+checkSeq(aboutIndex, int(margaret.SeqEmpty))
+
+contactIndexId, err := bot.MetaFeeds.GetOrCreateIndex(mfId, mainFeedRef, "index", "contact")
+r.NoError(err)
+contactIndex := getFeed(contactIndexId)
+checkSeq(contactIndex, int(margaret.SeqEmpty))
+```
+
+#### Get a feed using a feedref
+```golang
+func getFeed(bot *sbot.Sbot, feedID refs.FeedRef) (margaret.Log, error) {
+	feed, err := bot.Users.Get(storedrefs.Feed(feedID))
+	if err != nil {
+		return nil, fmt.Errorf("get feed failed", err)
+	}
+
+	// convert from log of seqnos-in-rxlog to log of refs.Message and return
+	return mutil.Indirect(bot.ReceiveLog, feed), nil
+}
+```
+
+#### Debug print an entire log using its feedref
+```golang
+// error wrap - a helper util
+// string header will be prefixed before each message. typically it is the context we're generating errors within.
+// msg is the specific message, err is the error (if passed)
+func ew(header string) func(msg string, err ...error) error {
+	return func(msg string, err ...error) error {
+		if len(err) > 0 {
+			return fmt.Errorf("[gossb: %s] %s (%w)", header, msg, err[0])
+		}
+		return fmt.Errorf("[gossb: %s] %s", header, msg)
+	}
+}
+
+func printLog(bot *sbot.Sbot, feedid refs.FeedRef) error {
+	e := ew("print log")
+
+	l, err := getFeed(bot, feedid)
+	if err != nil {
+		return e(fmt.Sprintf("couldnt get log %s", feedid.ShortSigil()), err)
+	}
+
+	src, err := l.Query()
+	if err != nil {
+		return e("failed to query log", err)
+	}
+
+	seq := l.Seq()
+	i := int64(0)
+	inform("last seqno:", seq)
+
+	for {
+		v, err := src.Next(context.TODO())
+		if luigi.IsEOS(err) {
+			break
+		}
+		inform("value:", v)
+		mm, ok := v.(refs.Message)
+		if !ok {
+			return e(fmt.Sprintf("expected %T to be a refs.Message (wrong log type? missing indirection to receive log?)", v))
+		}
+
+		fmt.Printf("log seq: %d - %s:%d (%s)\n",
+			i,
+			mm.Author().ShortSigil(),
+			mm.Seq(),
+			mm.Key().ShortSigil())
+
+		b := mm.ContentBytes()
+		if n := len(b); n > 128 {
+			fmt.Println("truncating", n, " to last 32 bytes")
+			b = b[len(b)-32:]
+		}
+		fmt.Printf("\n%s\n", hex.Dump(b))
+
+		i++
+	}
+
+	// margaret is 0-indexed
+	seq++
+	if seq != i {
+		return e(fmt.Sprintf("seq differs from iterated count: %d vs %d", seq, i))
+	}
+	return nil
+}
+```
 
 ## Links
 
