@@ -226,13 +226,14 @@ incomplete snippets, aimed at helping get developers over conceptuals bumps by d
 the gist of a task without creating a full on example program.
 
 **Note**: Some of the snippets below are demonstrating the expected behaviour using the assertion package
-`testify`:
+[testify](https://pkg.go.dev/github.com/stretchr/testify/require):
 
 ```golang
 import `github.com/stretchr/testify/require`
 // ...
-func TestAnExampleFunction (t *testing)
-r := require.New(t)
+func TestAnExampleFunction (t *testing) {
+  r := require.New(t)
+  // use stuff like r.Equal(..) or r.NoError(...) to your hearts cotent
 ```
 
 #### Signing an announcement with the root metafeed's key
