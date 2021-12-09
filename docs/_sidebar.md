@@ -1,4 +1,6 @@
 
+- [**ssb.nz**](https://ssbc.github.io/scuttlebutt-protocol-guide/)
+- [**Protocol Guide**](https://ssbc.github.io/scuttlebutt-protocol-guide/)
 - [**Implementations**](#implementations)
 
   - [Node.js](javascript/)
