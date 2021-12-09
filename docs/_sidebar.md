@@ -2,7 +2,7 @@
 - [**Implementations**](#implementations)
 
   - [Node.js](javascript/)
-  - [Go lang](golang/)
+  - [Golang](golang/)
   - [Rust](rust/)
   - [Python](python/)
 
