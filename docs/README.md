@@ -6,6 +6,10 @@ Welcome traveller! **Secure Scuttlebutt (SSB)** is a project which spans several
 This documentation is a meta-guide designed to familiarise you with some core concepts,
 and help you find the current tools in you language of choice.
 
+More information:
+* If you are looking for an **implementation-agnostic** protocol specification, see the [Scuttlebutt Protocol Guide](https://ssbc.github.io/scuttlebutt-protocol-guide/) site
+* If you want to learn more about Scuttlebutt in general (such as talks and how to get started), go visit the [main site](https://ssb.nz).
+
 ## Implementations
 
 Jump straight in?
