@@ -2,7 +2,7 @@
 
 ## Introduction
 
-There are currently two major Rust SSB implementations: [Kuska-ssb](rust/kuska) and [Sunrise Choir](rust/sunrise-choir).
+There are currently two major Rust SSB implementations: [Kuska-ssb](rust/kuska) and [Sunrise Choir](rust/sunrise-choir); as well as a client library: [golgi](rust/golgi).
 
 In order to work with either of these sets of libraries, you should be familiar with Rust and at least the basics mentioned in the [Scuttlebutt Protocol Guide](https://ssbc.github.io/scuttlebutt-protocol-guide/#keys-and-identities). Before we get started, these are a few terms that you should be familiar with:
 
