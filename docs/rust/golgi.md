@@ -38,11 +38,11 @@ use golgi::{GolgiError, Sbot};
 let mut sbot_client = Sbot::init(None, None).await?;
 ```
 
-Notice the `await` call in the snippet above? This is required due to the asynchronous nature of golgi and its methods. More about this later.
+Notice the `await` call in the snippet above? This is required due to the asynchronous nature of golgi and its methods.
 
 ## Whoami
 
-Once we have initiated the `Sbot` we can begin calling methods. The simplest of these is `whoami()`. If successful, it returns the public key of the local sbot; this is "our" Scuttlebutt identity:
+Once we have instantiated the `Sbot` we can begin calling methods. The simplest of these is `whoami()`. If successful, it returns the public key of the local sbot; this is "our" Scuttlebutt identity:
 
 ```rust
 let id = sbot_client.whoami().await?;
@@ -195,7 +195,7 @@ let blocking = false;
 let msg_ref =  sbot_client.set_relationship(ssb_id, following, blocking).await?;
 ```
 
-Now that we're able to define our relationship with other peers, we may wish to query the social relationships within our vicinity. Golgi provides the `friends_hops()` method which offers a means of retrieving a list of peers within a specied hops range:
+Now that we're able to define our relationship with other peers, we may wish to query the social relationships within our vicinity. Golgi provides the `friends_hops()` method which offers a means of retrieving a list of peers within a specified hops range:
 
 ```rust
 // The `friends_hops()` method expects `FriendsHops` as a parameter.
@@ -286,10 +286,13 @@ let ssb_id = "@zqshk7o2Rpd/OaZ/MxH6xXONgonP1jH+edK9+GZb/NY=.ed25519";
 
 let profile_info = sbot_client.get_profile_info(ssb_id).await?;
 
+// The type of `profile_info` is a HashMap. The `get()` method
+// will either return `None` or `Some(value)`.
 let name = profile_info.get("name");
 let description = profile_info.get("description");
 let image = profile_info.get("image");
 
+// Match on the `Option` types for the variables assigned above.
 match (name, description, image) {
     (Some(name), Some(desc), Some(image)) => {
         println!(
@@ -303,7 +306,7 @@ match (name, description, image) {
 }
 ```
 
-Methods also exist for retriving individual `about` values: `get_name(ssb_id)`, `get_description(ssb_id)` and `get_name_and_image(ssb_id)`. These methods act in the same way as `get_profile_info()` and are thus not illustrated here (see the API documentation for per-method example code).
+Methods also exist for retrieving individual `about` values: `get_name(ssb_id)`, `get_description(ssb_id)` and `get_name_and_image(ssb_id)`. These methods act in the same way as `get_profile_info()` and are thus not illustrated here (see the API documentation for per-method example code).
 
 The `get_about_message_stream()` method allows for more advanced interactions with `about` message types. This method returns a stream of message values (`SsbMessageValue`) which can then be handled as desired:
 
