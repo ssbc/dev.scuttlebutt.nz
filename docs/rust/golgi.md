@@ -419,7 +419,7 @@ history_stream.for_each(|msg| {
 
 With a bit of luck, you should now have a basic understanding of golgi and enough code examples to start building your own unique Scuttlebutt client application. Golgi is still very young and is expected to evolve rapidly as we put it into action.
 
-Please feel free to contact @notplants or @glyph (contact info below) if you have any questions. We would love to hear your feedback on this guide and any suggestions you may have! You're also invited to open issues on the [git repo]() for any bugs or feature requests you may have.
+Please feel free to contact @notplants or @glyph (contact info below) if you have any questions. We would love to hear your feedback on this guide and any suggestions you may have! You're also invited to open issues on the [git repo](https://git.coopcloud.tech/golgi-ssb/golgi) for any bugs or feature requests you may have.
 
 ## Contact
 
