@@ -26,6 +26,14 @@ You will need to be running a go-sbot server (with which to connect using golgi)
 
 Note: Support for JS interoperability will likely be added in the near-future.
 
+Add the [golgi crate](https://crates.io/crates/golgi) as a dependency in the `Cargo.toml` manifest of your project, as well as the [async-std](https://crates.io/crates/async-std) and [futures](https://crates.io/crates/futures) crates (required if you're going to use the stream methods provided by golgi):
+
+```toml
+async-std = "1.10.0"
+futures = "0.3.21"
+golgi = "0.1"
+```
+
 You may wish to keep the [golgi API documentation](https://docs.rs/golgi/0.1.0/golgi/) open in a tab while working with golgi. Each method is documented in detail.
 
 ## Sbot Connection
