@@ -1,1 +1,54 @@
-// over-ride styles here
+/* over-ride styles here */
+
+
+/* styles for <code-explorer /> */
+
+/* NOTE currently this one isn't being applied?? */
+div.code-explorer {
+  display: grid;
+  grid-template-columns: auto 1fr;
+}
+
+.code-explorer > .hidden-slot {
+  display: none;
+}
+
+.code-explorer > .code {
+}
+.code-explorer > .code > .line {
+  padding: 0 1.4rem 0 5px;
+  display: grid;
+  grid-template-columns: auto 1fr;
+}
+.code-explorer > .code > .line:hover {
+  background-color: rgba(255, 0, 255, 0.1);
+  cursor: pointer;
+}
+.code-explorer > .code > .line.active {
+  background-color: rgb(206, 251, 230);
+}
+.code-explorer > .code >.line > pre,
+.code-explorer > .code >.line > pre > code {
+  background-color: transparent;
+  padding: 0;
+  margin: 0;
+}
+
+.code-explorer > .code >.line > pre > code > span.token.function.require {
+  color: hotpink;
+}
+
+.code-explorer > .description {
+  font-family: Roboto, sans-serif;
+  padding: 10px;
+
+  color: #555;
+  border: 5px solid rgba(255, 0, 255, 0);
+  border-radius: 1rem;
+}
+.code-explorer > .description.active {
+  border-color: rgb(206, 251, 230);
+}
+.code-explorer > .description p {
+  margin-bottom: .8rem;
+}

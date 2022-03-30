@@ -3,7 +3,7 @@
 - [**Protocol Guide** ⧉](https://ssbc.github.io/scuttlebutt-protocol-guide/)
 - [**Implementations**](#implementations)
 
-  - [Node.js](javascript/)
+  - [Javascript](javascript/)
   - [Golang](golang/)
   - [Rust](rust/)
   - [Python](python/)

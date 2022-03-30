@@ -1,4 +1,4 @@
-# Rust SSB implementations
+# Rust SSB 
 
 ## Introduction
 

@@ -10,6 +10,8 @@
       content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
     />
     <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify/lib/themes/vue.css" />
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify-sidebar-collapse/dist/sidebar.min.css" />
+
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
@@ -18,12 +20,121 @@
       window.$docsify = {
         repo: "ssbc/dev.scuttlebutt.nz",
         name: "Scuttlebutt Map",
+        loadSidebar: true,
+        alias: {
+          '/.*/_sidebar.md': '/_sidebar.md',
+        },
+        maxLevel: 4,
+        subMaxLevel: 3,
+        sidebarDisplayLevel: 1, 
 
-        loadSidebar: true
-      };
+        vueComponents: {
+          'code-explorer': {
+            data () {
+              return { 
+                input: '',
+                hoveredLine: null,
+                selectedLine: null
+              }
+            },
+            mounted () {
+              this.input = this.$refs.hiddenSlot.innerHTML
+                .trim()
+                .replace(/<\/?p>/g, '\n')
+            },
+            computed: {
+              linesWithComments () {
+                const lines = this.input.split('\n')
+                const COMMENT_START_REGEX = /^\s*\/\//
+                const isComment = (line) => line.match(COMMENT_START_REGEX)
+
+                const result = []
+                while (lines.length) {
+                  const line = {
+                    code: lines.shift(),
+                    comments: []
+                  }
+                  while (lines[0] && isComment(lines[0])) {
+                    const comment = lines.shift().replace(COMMENT_START_REGEX, '')
+                    line.comments.push(comment)
+                  }
+                  result.push(line)
+                }
+                return result
+              },
+              prettyLines () {
+                const prism = window.Prism
+                const code = this.linesWithComments.map(line => line.code).join('\n')
+
+                prism.hooks.add('after-tokenize', obj => {
+                  obj.tokens.forEach(token => {
+                    if (token.type === 'function' && token.content === 'require') {
+                      token.type = 'function require'
+                    }
+                  })
+                })
+
+                return prism.highlight(code, prism.languages.javascript, 'javascript')
+                  .split('\n')
+              },
+              comments () {
+                if (this.selectedLine) {
+                  return this.linesWithComments[this.selectedLine].comments
+                }
+                if (this.hoveredLine) {
+                  return this.linesWithComments[this.hoveredLine].comments
+                }
+                return []
+              },
+              descriptionClass () {
+                return this.comments.length ? 'description active' : 'description'
+              }
+            },
+            methods: {
+              lineClass (i) {
+                const cls = 'line'
+                if (this.selectedLine === 'i') cls.push(' active')
+                return cls
+              },
+              handleClick (i) {
+                if (this.selectedLine === i) this.selectedLine = null
+                else this.selectedLine = i
+              }
+            },
+            template: `
+              <div class='code-explorer'>
+                <div class='hidden-slot' ref='hiddenSlot'>
+                  <slot />
+                </div>
+
+                <div class='code'>
+                  <div v-for='(line, i) of prettyLines' :key='i'
+                    :class='selectedLine === i ? "line active" : "line"'
+                    @click='handleClick(i)'
+                    @mouseover='hoveredLine = i'
+                    @mouseout='hoveredLine = null'
+                  >
+                    <pre v-if="line === ''"><code> </code></pre>
+                    <pre v-else><code v-html="line" class='language-javascript' /></pre>
+                  </div>
+                </div>
+
+                <div :class='descriptionClass'>
+                  <p v-for="(line, i) of comments" :key='i'>
+                    {{line}}
+                  </p>
+                </div>
+              </div>
+            `
+          }
+        }
+      }
     </script>
     <script src="//cdn.jsdelivr.net/npm/docsify/lib/docsify.min.js"></script>
     <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/search.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/docsify-sidebar-collapse/dist/docsify-sidebar-collapse.min.js"></script>
+
+    <script src="https://unpkg.com/vue@2"></script>
 
     <!-- syntax-hightlighting -->
     <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-go.min.js"></script>

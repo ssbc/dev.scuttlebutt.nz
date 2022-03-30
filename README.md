@@ -15,5 +15,5 @@ Uses [docsify](https://docsify.js.org) for a happy, no-build setup.
 If you have Node installed, you can see what the docs look like by running this command in the same directory
 
 ```bash
-$ npx server docs
+$ npx serve docs
 ```
