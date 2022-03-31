@@ -1,6 +1,4 @@
-# Scuttlebutt plugins
-
-## Almost always used
+### Almost always used
 
 - ssb-backlinks
 - ssb-blobs
@@ -11,7 +9,7 @@
 - ssb-master
 - ssb-replicate
 
-## Often used
+### Often used
 
 - ssb-db2
 - ssb-about
@@ -31,7 +29,7 @@
 - ssb-unix-socket
 - ssb-ws
 
-## Sometimes used
+### Sometimes used
 
 - ssb-blobs-purge
 - ssb-contacts
@@ -55,7 +53,7 @@
 - ssb-threads
 - ssb-unread
 
-## Application-specific
+### Application-specific
 
 - git-ssb-web
 - patchfoo
@@ -75,6 +73,6 @@
 - ssb-talequery
 - ssb-viewer
 
-## Deprecated
+### Deprecated
 
 - ssb-fulltext
