@@ -236,7 +236,7 @@ func TestAnExampleFunction (t *testing) {
   // use stuff like r.Equal(..) or r.NoError(...) to your hearts cotent
 ```
 
-#### Register indexes (and then get them)
+### Register indexes (and then get them)
 ```golang
 err = bot.MetaFeeds.RegisterIndex(mfId, mainFeedRef, "about")
 r.NoError(err)
@@ -256,7 +256,7 @@ contactIndex := getFeed(contactIndexId)
 checkSeq(contactIndex, int(margaret.SeqEmpty))
 ```
 
-#### Get a feed using a feedref
+### Get a feed using a feedref
 ```golang
 func getFeed(bot *sbot.Sbot, feedID refs.FeedRef) (margaret.Log, error) {
 	feed, err := bot.Users.Get(storedrefs.Feed(feedID))
@@ -269,7 +269,7 @@ func getFeed(bot *sbot.Sbot, feedID refs.FeedRef) (margaret.Log, error) {
 }
 ```
 
-#### Debug print an entire log using its feedref
+### Debug print an entire log using its feedref
 ```golang
 // error wrap - a helper util
 // string header will be prefixed before each message. typically it is the context we're generating errors within.

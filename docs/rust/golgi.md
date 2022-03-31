@@ -1,12 +1,12 @@
-# Golgi Rust client library
+## Golgi (client library)
 
-## Introduction
+### Introduction
 
 [Golgi](http://golgi.mycelial.technology) is an asynchronous, experimental Scuttlebutt client that aims to facilitate Scuttlebutt application development. It provides a high-level API for interacting with an sbot instance and uses the [kuska-ssb](https://github.com/Kuska-ssb) libraries to make RPC calls. It is a great fit if you wish to build a simple client that communicates with a standalone sbot (Scuttlebutt node or server). Development efforts are currently oriented towards [go-sbot](https://github.com/cryptoscope/ssb) interoperability.
 
 This guide will introduce some of the features of golgi which may be useful for client developers. Visit the [examples directory](https://git.coopcloud.tech/golgi-ssb/golgi/src/branch/main/examples) in the golgi repository for more comprehensive examples.
 
-## Features
+### Features
 
 Golgi offers the ability to invoke individual RPC methods while also providing a number of convenience methods which may involve multiple RPC calls and / or the processing of data received from those calls.
 
@@ -20,7 +20,7 @@ You may also benefit from reading [Asynchronous Programming in Rust](https://rus
 
 -----
 
-## Prerequisites
+### Prerequisites
 
 You will need to be running a go-sbot server (with which to connect using golgi). See the [README](https://github.com/cryptoscope/ssb) for installation details.
 
@@ -36,7 +36,7 @@ golgi = "0.1"
 
 You may wish to keep the [golgi API documentation](https://docs.rs/golgi/0.1.0/golgi/) open in a tab while working with golgi. Each method is documented in detail.
 
-## Sbot Connection
+### Sbot Connection
 
 Before we can communicate with the go-sbot, we first need to initialise a connection. We do this by calling the `init()` method on the `Sbot` `struct`. In this case, we are passing `None` for the `ip_port` parameter and `None` for the `net_id` parameter, resulting in a default of `127.0.0.1:8008` and the standard network key (aka. caps key) for the Scuttleverse:
 
@@ -48,7 +48,7 @@ let mut sbot_client = Sbot::init(None, None).await?;
 
 Notice the `await` call in the snippet above? This is required due to the asynchronous nature of golgi and its methods.
 
-## Whoami
+### Whoami
 
 Once we have instantiated the `Sbot` we can begin calling methods. The simplest of these is `whoami()`. If successful, it returns the public key of the local sbot; this is "our" Scuttlebutt identity:
 
@@ -60,7 +60,7 @@ println!("{}", id);
 // @1vxS6DMi7z9uJIQG33W7mlsv21GZIbOpmWE1QEcn9oY=.ed25519
 ```
 
-## Publishing Messages
+### Publishing Messages
 
 One of the first things we tend to do when creating a new Scuttlebutt account is set a name and description for the identity. This is accomplished by publishing particular kinds of messages. Golgi provides convenient methods to achieve this:
 
@@ -104,7 +104,7 @@ let subscription = SsbMessageContent::Channel {
 let msg_ref = sbot_client.publish(subscription).await?;
 ``` 
 
-## Invites
+### Invites
 
 Golgi provides a means of both creating and redeeming invite codes. Invite code creation is one of the key features of a Scuttlebutt pub and is useful for onboarding peers. When running a pub, it's important to first publish a `pub address` message with the connection details of the sbot:
 
@@ -164,7 +164,7 @@ let mref = sbot_client.invite_use(test_invite).await?;
 println!("mref: {:?}", mref);
 ```
 
-## Social Relationships
+### Social Relationships
 
 Now that we know how to publish messages and deal with invites we can move on to defining and querying social relationships.
 
@@ -283,7 +283,7 @@ match sbot_client.friends_is_blocking(block_query).await {
 }
 ```
 
-## Peer Data
+### Peer Data
 
 Now might be a good time to start learning more about our peers. For example, what are their names and how do they describe themselves? As is common throughout the golgi API, we have access to lower-level methods as well as convenience methods for ease of use.
 
@@ -340,7 +340,7 @@ about_message_stream.for_each(|msg| {
 }).await;
 ```
 
-## Subset Queries
+### Subset Queries
 
 Of course, there are more message types than just `about` messages. If we wish to query the sbot database for messages of a particular type or from a particular author, or even some combination of author and type, we can use the `get_subset_stream()` method (recently introduced during the SSB NGI Pointer project). It is recommended to read the [Subset replication for SSB](https://github.com/ssb-ngi-pointer/ssb-subset-replication-spec) document, paying particular attention to the section on [ssb-ql-1](https://github.com/ssb-ngi-pointer/ssb-subset-replication-spec#ssb-ql-1):
 
@@ -401,7 +401,7 @@ let query_stream = sbot_client
 
 More complex queries can also be composed using the `and` and `or` operators. See the `SubsetQuery` type definition in the golgi docs and the subset query specification document linked above.
 
-## History Stream
+### History Stream
 
 Another way of returning messages from a single author is provided by the `create_history_stream()` method. This method takes a single SSB ID (public key) and returns all available messages authored by that identity.
 
@@ -423,13 +423,13 @@ history_stream.for_each(|msg| {
 }).await;
 ```
 
-## Conclusion
+### Conclusion
 
 With a bit of luck, you should now have a basic understanding of golgi and enough code examples to start building your own unique Scuttlebutt client application. Golgi is still very young and is expected to evolve rapidly as we put it into action.
 
 Please feel free to contact @notplants or @glyph (contact info below) if you have any questions. We would love to hear your feedback on this guide and any suggestions you may have! You're also invited to open issues on the [git repo](https://git.coopcloud.tech/golgi-ssb/golgi) for any bugs or feature requests you may have.
 
-## Contact
+### Contact
 
 Golgi is authored by [@notplants](https://mfowler.info/) and [@glyph](https://mycelial.technology). This guide was written by @glyph. Both can be found in the Scuttleverse:
 

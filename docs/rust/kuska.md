@@ -1,12 +1,12 @@
-# Kuska SSB Rust implementation
+## Kuska implementation
 
-## Introduction
+### Introduction
 
 [Kuska-ssb](https://github.com/Kuska-ssb) implements a subset of the existing JavaScript functionality. The majority of the code lives in the [ssb](https://github.com/Kuska-ssb/ssb) repository, with a separate [handshake](https://github.com/Kuska-ssb/handshake) repository containing the Secure Scuttlebutt handshake and boxstream library.
 
 If you are not familiar with the [Rust programming language](https://www.rust-lang.org/), please visit the [Getting started](https://www.rust-lang.org/learn/get-started) page to learn more. The [Rust programming language book](https://doc.rust-lang.org/book/) and [Rust By Example](https://doc.rust-lang.org/stable/rust-by-example/) are both excellent learning guides.
 
-## Keystore
+### Keystore
 
 The [keystore modules](https://github.com/Kuska-ssb/ssb/tree/master/src/keystore) are used to create, load, read and write SSB keys.
 
@@ -49,7 +49,7 @@ let mut file = File::create("bongani").await?;
 keystore::write_patchwork_config(&bongani, &mut file).await.expect("write local secret");
 ```
 
-### Signing
+#### Signing
 
 The most common operation with our keys is signing objects and then verifying their signatures. SSB has a very specific message encoding format, but for this example we'll use an example object.
 
@@ -85,7 +85,7 @@ object.signature();
 // "Ya6RkIDJDRh7UE1tJlpJ7AlpcEVeMjjmEzCm3WCy4dHWJysGYJS5dkWvsJ3xphXrVE61Yqv+dXNPLv8ypzpiAg==.sig.ed25519"
 ```
 
-### Verification
+#### Verification
 
 In order to verify a signed object, Kuska-ssb implements a `from_value` method on the `Message` struct. The method takes a single argument in the form of a JSON object. The first action performed by the method is to verify that each of the required message fields exists and that the type of the value for each field is correct. Checked fields include: `previous`, `sequence`, `timestamp`, `hash` and `content`.
 
@@ -112,15 +112,15 @@ Error::InvalidSignature
 
 See [`src/feed/error.rs`](https://github.com/Kuska-ssb/ssb/blob/90017a31fa8789e548347bb205e96be8fc9351c7/src/feed/error.rs) for the complete `Error` listing.
 
-## Sodium Oxide
+### Sodium Oxide
 
 The cryptographic functionality of Kuska-ssb is provided by a fork of [sodiumoxide](https://github.com/Kuska-ssb/sodiumoxide), a type-safe and efficient Rust binding for libsodium. The best way to understand this API is to read the [crate documentation](https://docs.rs/sodiumoxide/0.2.6/sodiumoxide/). Of particular interest is the [documentation of the crypto module](https://docs.rs/sodiumoxide/0.2.6/sodiumoxide/crypto/index.html), which contains the cryptography methods that form the basis of the [sodium.rs crypto module](https://github.com/Kuska-ssb/ssb/blob/master/src/crypto/sodium.rs), [message module](https://github.com/Kuska-ssb/ssb/blob/master/src/feed/message.rs) and others.
 
-## TODO
+### TODO
 
 Feeds. Peers. Replication. etc.
 
-## Contact
+### Contact
 
 Kuska-ssb was written by [@adria0](https://github.com/adria0) with cryptographic support from [@Dhole](https://github.com/Dhole). This documentation was compiled by [@glyph](https://github.com/mycognosist). All three can be found in the Scuttleverse:
 

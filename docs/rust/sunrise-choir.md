@@ -1,6 +1,6 @@
-# Sunrise Choir Rust SSB implementation
+## Sunrise Choir implementation
 
-## Introduction
+### Introduction
 
 The code for the Sunrise Choir Rust SSB implementation is split between many repositories which can be found on their [GitHub organization page](https://github.com/sunrise-choir). Many of the crates have excellent low-level documentation in the form of HTML pages generated from documentation comments in the source code. Links for crate-specific documentation can usually be found in the crate repository READMEs. Further information about the team and their work can be found on the [Sunrise Choir website](https://sunrisechoir.com/) or [OpenCollective page](https://opencollective.com/sunrise-choir).
 
@@ -8,7 +8,7 @@ If you are not familiar with the [Rust programming language](https://www.rust-la
 
 A playground repository exists as a partner reference to this document: [Sunrise SSB Playground](https://github.com/mycognosist/sunrise-ssb-playground). The repo contains examples which can be run using the Rust compiler, and which demonstrate the features documented here.
 
-## SSB-Keyfile
+### SSB-Keyfile
 
 [SSB-Keyfile](https://crates.io/crates/ssb-keyfile) provides basic utilities to create and read keyfiles that are compatible with the JS SSB implementation. This module reexports the [`Keypair` struct](https://docs.rs/ssb-crypto/0.2.2/ssb_crypto/struct.Keypair.html) and related methods from the [ssb-crypto](https://docs.rs/ssb-crypto/0.2.2/ssb_crypto/index.html) module. As with most of the Sunrise Choir Rust SSB modules, SSB-Keyfile can either be imported into another project as a library or compiled into a standalone binary which takes parameters as arguments.
 
@@ -46,7 +46,7 @@ println!("{:#?}", benedict);
 let benedict = ssb_keyfile::read_from_path("/home/benedict/.ssb/secret")?;
 ```
 
-### Signing
+#### Signing
 
 The most common operation with our keys is signing objects and then verifying their signatures. SSB has a very specific message encoding format, but for this example we'll use an example object.
 
@@ -68,7 +68,7 @@ println!("{:?}", signature.as_base64());
 // note: notice that the output does not include a ".ed25519" suffix or a sigil prefix
 ```
 
-### Verification
+#### Verification
 
 Now when we compare the signature against Aruna's public key, we'll see that the signature is valid and that Aruna must have signed this message. This is important for ensuring that an object hasn't been tampered with. Any change to the object will invalidate the signature.
 
@@ -88,7 +88,7 @@ println!("{}", is_valid);
 // false
 ```
 
-## Cryptography
+### Cryptography
 
 The object signing illustrated above is made possible by the [ssb-crypto](https://crates.io/crates/ssb-crypto) crate:
 
@@ -96,7 +96,7 @@ The object signing illustrated above is made possible by the [ssb-crypto](https:
 
 > There are two implementations of the crypto operations available; one that uses [libsodium](https://libsodium.gitbook.io/) C library (via the [sodiumoxide](https://crates.io/crates/sodiumoxide) crate), and a pure-rust implementation that uses [dalek](https://dalek.rs/) and [RustCrypto](https://github.com/RustCrypto/) crates (which is the default). You can select which implementation to use via Cargo.toml feature flags (see documentation - link above).
 
-### Verification
+#### Verification
 
 The [ssb-verify-signatures](https://crates.io/crates/ssb-verify-signatures) crate allows us to verify the signature of an entire SSB message. It also allows the verification of multiple messages in parallel.
 
@@ -196,7 +196,7 @@ match ssb_verify_signatures::par_verify_message_values(&values, None) {
 
 The batch processing methods will return an error (`Err(InvalidSignature)`) if the verification of any message signature fails. Unfortunately, the error does not identify which message failed to verify. If you need to work out which message failed, you might have to find it using the `ssb_verify_signatures::verify_message_value` method after the parallel method has returned an error.
 
-### Validation
+#### Validation
 
 A valid signature isn't the only constraint that SSB messages have to meet. The [ssb-validate](https://crates.io/crates/ssb-validate) crate helps us to verify that messages conform to the [message format](https://ssbc.github.io/scuttlebutt-protocol-guide/#message-format).
 
@@ -294,7 +294,7 @@ match ssb_validate::par_validate_message_hash_chain_of_feed::<_, &[u8]>(&message
 // validated
 ```
 
-## SSB Multiformats
+### SSB Multiformats
 
 You may have noticed that entities in SSB are referenced with a string starting with a sigil:
 
@@ -328,11 +328,11 @@ println!("{}", is_msg_or_blob);
 
 Note that `Multihash::from_legacy()` returns `Ok(Multihash, &[u8])` on success, where `Multihash` is an `enum` with two variants: `Message([u8; 32])` and `Blob([u8; 32])`.
 
-## Peer Connections
+### Peer Connections
 
 We've got our keypair, we know how to make messages, our feed seems to be valid -- but none of that is very useful unless we can send those messages to peers. Before we think about connecting to peers, we first have to be able to define the Scuttleverse we're acting in by creating or referencing a network key.
 
-### Network Key
+#### Network Key
 
 The 'network key' - also known as the 'network identifier', 'app key' or 'SHS key' - is used during the [secret handshake](https://ssbc.github.io/scuttlebutt-protocol-guide/#handshake) to prove that both parties are participating in the same SSB network. It is a 32-byte key which allows distinct, isolated Scuttlebutt networks to be created. If you're building a network of temperature sensors on Secure Scuttlebutt you probably don't want to be peering with people sharing source code or building a social network (👋). In that case, you would supply a unique network key when performing a handshake.
 
@@ -365,13 +365,13 @@ let mut rng = rand::thread_rng();
 let rng_alt_netkey = NetworkKey::generate_with_rng(&mut rng);
 ```
 
-### Discovery
+#### Discovery
 
 As described in the Scuttlebutt Protocol Guide's section on [Discovery](https://ssbc.github.io/scuttlebutt-protocol-guide/#discovery), we need to know the IP address, port number and public key of a peer in order to make a connection. The Scuttlebutt protocol offers three methods for peers to discover one other: local network discovery (via UDP broadcast messages), invite codes and pub "about" messages.
 
 The Sunrise Choir implementation does not define discovery mechanisms or peer address data models for us. These aspects of the SSB application are left up to us to develop. Fortunately, two existing implementations are available for us to study and replicate: the [Scuttle-chat](https://github.com/clevinson/scuttle-chat) application implements a local network [discovery](https://github.com/clevinson/scuttle-chat/blob/master/src/discovery.rs) mechanism using UDP, as does the [solar](https://github.com/Kuska-ssb/solar) application in [lan_discovery](https://github.com/Kuska-ssb/solar/blob/master/src/actors/lan_discovery.rs).
 
-### Secret Handshake
+#### Secret Handshake
 
 Once we have discovered the necessary details of our peer (IP address, port, public key), we can create a TCP stream between us and perform the handshake: a 4-step process to authenticate both parties and establish an encrypted channel. In the Sunrise Choir SSB implementation, the [ssb-handshake](https://crates.io/crates/ssb-handshake) crate provides us with the necessary functionality. The crate provides two primary functions: one for the [`server_side()`](https://docs.rs/ssb-handshake/0.5.1/ssb_handshake/fn.server_side.html) of the handshake and one for the [`client_side()`](https://docs.rs/ssb-handshake/0.5.1/ssb_handshake/fn.client_side.html).
 
@@ -391,7 +391,7 @@ Working code examples for these methods (using [`async_std`](https://docs.rs/asy
 
 The result of our successful handshake is the [`HandshakeKeys`](https://github.com/sunrise-choir/ssb-handshake/blob/0ee6c9b099a56b9493d835740d946177748a9288/src/crypto/outcome.rs) `struct` (assigned to the `handshake_keys` variable in our example code above). This `struct` contains the public key of our remote peer, as well as the keys and nonces required to encrypt further communications via box stream.
 
-### Box Stream
+#### Box Stream
 
 Box stream is the bulk encryption protocol used to exchange messages following the handshake until the connection ends. It is designed to protect messages from being read or modified by a man-in-the-middle.
 
@@ -437,7 +437,7 @@ let mut buf = [0; 8];
 box_reader.read(&mut buf).await?;
 ```
 
-### Packet Stream (RPC Protocol)
+#### Packet Stream (RPC Protocol)
 
 While it's possible to read and write raw data over the box stream, SSB implements an RPC (remote procedure call) protocol to define the format of messages passed between peers. The [ssb-packetstream](https://crates.io/crates/ssb-packetstream) crate provides the data types and functionality we need to send data packets over the stream. Let's continue building on our box stream example to read and write packets.
 
@@ -503,11 +503,11 @@ match packet_stream.next().await {
 
 That covers the basics of working with packet streams using the `ssb-packetstream` crate. If you're looking for a more comprehensive reference for the RPC protocol, remember to check out the exquisitely-craft [Scuttlebutt Protocol Guide](https://ssbc.github.io/scuttlebutt-protocol-guide/index.html#rpc-protocol).
 
-## TODO
+### TODO
 
 Replication.
 
-## Contact
+### Contact
 
 The Sunrise Choir consists of [@Mikey](https://github.com/ahdinosaur), [@Piet](https://github.com/pietgeursen), [@Matt](https://github.com/mmckegg) and [@Sean](https://github.com/sbillig). This documentation was compiled by [@glyph](https://github.com/mycognosist). All can be found in the Scuttleverse:
 
