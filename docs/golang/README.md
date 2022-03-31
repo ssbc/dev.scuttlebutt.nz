@@ -228,7 +228,7 @@ the gist of a task without creating a full on example program.
 **Note**: Some of the snippets below are demonstrating the expected behaviour using the assertion package
 [testify](https://pkg.go.dev/github.com/stretchr/testify/require):
 
-```golang
+```go
 import `github.com/stretchr/testify/require`
 // ...
 func TestAnExampleFunction (t *testing) {
@@ -237,7 +237,7 @@ func TestAnExampleFunction (t *testing) {
 ```
 
 ### Register indexes (and then get them)
-```golang
+```go
 err = bot.MetaFeeds.RegisterIndex(mfId, mainFeedRef, "about")
 r.NoError(err)
 
@@ -257,7 +257,7 @@ checkSeq(contactIndex, int(margaret.SeqEmpty))
 ```
 
 ### Get a feed using a feedref
-```golang
+```go
 func getFeed(bot *sbot.Sbot, feedID refs.FeedRef) (margaret.Log, error) {
 	feed, err := bot.Users.Get(storedrefs.Feed(feedID))
 	if err != nil {
@@ -270,7 +270,7 @@ func getFeed(bot *sbot.Sbot, feedID refs.FeedRef) (margaret.Log, error) {
 ```
 
 ### Debug print an entire log using its feedref
-```golang
+```go
 // error wrap - a helper util
 // string header will be prefixed before each message. typically it is the context we're generating errors within.
 // msg is the specific message, err is the error (if passed)
