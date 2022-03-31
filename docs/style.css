@@ -6,7 +6,8 @@
 /* NOTE currently this one isn't being applied?? */
 div.code-explorer {
   display: grid;
-  grid-template-columns: auto 1fr;
+  grid-template-columns: minmax(auto, 3fr) 2fr;
+  grid-gap: 1rem;
 }
 
 .code-explorer > .hidden-slot {
@@ -14,11 +15,18 @@ div.code-explorer {
 }
 
 .code-explorer > .code {
+  background-color: #f8f8f8;
+  padding: 1.4rem 0
 }
 .code-explorer > .code > .line {
-  padding: 0 1.4rem 0 5px;
+  margin: 0 0 2px 0;
+
   display: grid;
   grid-template-columns: auto 1fr;
+  border-right: 2px solid rgba(0,0,0,0);
+}
+.code-explorer > .code > .line.comments {
+  border-right: 2px solid #42b983;
 }
 .code-explorer > .code > .line:hover {
   background-color: rgba(255, 0, 255, 0.1);
@@ -27,8 +35,13 @@ div.code-explorer {
 .code-explorer > .code > .line.active {
   background-color: rgb(206, 251, 230);
 }
-.code-explorer > .code >.line > pre,
-.code-explorer > .code >.line > pre > code {
+.code-explorer > .code > .line > pre {
+  overflow-x: hidden;
+  background-color: transparent;
+  padding: 0 1.4rem;
+  margin: 0;
+}
+.code-explorer > .code > .line > pre > code {
   background-color: transparent;
   padding: 0;
   margin: 0;
@@ -39,6 +52,7 @@ div.code-explorer {
 }
 
 .code-explorer > .description {
+  align-self: start;
   font-family: Roboto, sans-serif;
   padding: 10px;
 
@@ -50,5 +64,5 @@ div.code-explorer {
   border-color: rgb(206, 251, 230);
 }
 .code-explorer > .description p {
-  margin-bottom: .8rem;
+  margin: 0 0 1.2rem 0;
 }

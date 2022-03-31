@@ -1,4 +1,4 @@
-<code-explorer>
+<code-explorer language='javascript'>
 const Stack = require('secret-stack')
 const caps = require('ssb-caps')
 const ssbKeys = require('ssb-keys')

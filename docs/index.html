@@ -28,8 +28,22 @@
         subMaxLevel: 3,
         sidebarDisplayLevel: 1, 
 
+        // markdown (marked, renderer) {
+        //   const tokenizer = {
+        //     code (src) {
+        //       if (src.startsWith('    ')) return 
+        //       return false
+        //     }
+        //   }
+        //   marked.use({ tokenizer })
+        //   return marked
+        // },
+
         vueComponents: {
           'code-explorer': {
+            props: {
+              language: { type: String, default: 'javascript' }
+            },
             data () {
               return { 
                 input: '',
@@ -38,9 +52,13 @@
               }
             },
             mounted () {
+              // we read what's in the slot by pulling innerHTML (we use this instead of innerText as it preserves newlines)
+              // but it means we have to do some tidyin up
               this.input = this.$refs.hiddenSlot.innerHTML
+                // recover the white space lines (\n\n)
+                .replace(/<\/p><p>/g, '\n\n')
+                .replace(/<\/?p>/g, '')
                 .trim()
-                .replace(/<\/?p>/g, '\n')
             },
             computed: {
               linesWithComments () {
@@ -66,15 +84,17 @@
                 const prism = window.Prism
                 const code = this.linesWithComments.map(line => line.code).join('\n')
 
-                prism.hooks.add('after-tokenize', obj => {
-                  obj.tokens.forEach(token => {
-                    if (token.type === 'function' && token.content === 'require') {
-                      token.type = 'function require'
-                    }
+                if (this.language === 'javascript') {
+                  prism.hooks.add('after-tokenize', obj => {
+                    obj.tokens.forEach(token => {
+                      if (token.type === 'function' && token.content === 'require') {
+                        token.type = 'function require'
+                      }
+                    })
                   })
-                })
+                }
 
-                return prism.highlight(code, prism.languages.javascript, 'javascript')
+                return prism.highlight(code, prism.languages[this.language], this.language)
                   .split('\n')
               },
               comments () {
@@ -92,8 +112,8 @@
             },
             methods: {
               lineClass (i) {
-                const cls = 'line'
-                if (this.selectedLine === 'i') cls.push(' active')
+                let cls = 'line'
+                if (this.linesWithComments[i].comments.length) cls += ' comments'
                 return cls
               },
               handleClick (i) {
@@ -109,13 +129,18 @@
 
                 <div class='code'>
                   <div v-for='(line, i) of prettyLines' :key='i'
-                    :class='selectedLine === i ? "line active" : "line"'
+                    :class='lineClass(i) + (selectedLine === i ? " active" : "")'
                     @click='handleClick(i)'
                     @mouseover='hoveredLine = i'
                     @mouseout='hoveredLine = null'
                   >
+
                     <pre v-if="line === ''"><code> </code></pre>
-                    <pre v-else><code v-html="line" class='language-javascript' /></pre>
+                    <pre v-else><code v-html="line" :class='"language-" + language' /></pre>
+
+                    <div class='spacer' />
+
+                    <div class='comment-mark' />
                   </div>
                 </div>
 

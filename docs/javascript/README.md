@@ -12,6 +12,7 @@ You should be familiar with JavaScript, Node.js, and at least the basics mention
 - **Multiserver address** is [usually] a combined address and public key (like HTTPS with certificate pinning).
 - **DB** is where messages are stored locally and from where they can be queried.
 
+---
 
 ## Core Modules
 
@@ -20,6 +21,7 @@ or are tools for canonically testing e.g. a message Id.
 
 [](core_modules.md ':include')
 
+---
 
 ## Plugins
 
@@ -27,6 +29,7 @@ Short of "secret-stack plugins" these are modules which extend the functionality
 
 [](plugins.md ':include')
 
+---
 
 ## Example Setups
 

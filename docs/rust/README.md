@@ -13,8 +13,14 @@ In order to work with either of these sets of libraries, you should be familiar 
 - **MuxRPC** is a communication protocol (like HTTP).
 - **Multiserver address** is [usually] a combined address and public key (like HTTPS with certificate pinning).
 
+---
+
 [](kuska.md ':include')
 
+---
+
 [](sunrise-choir.md ':include')
+
+---
 
 [](golgi.md ':include')
