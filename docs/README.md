@@ -97,3 +97,15 @@ You can read about this in depth in the [Scuttlebutt Protocol Guide](https://ssb
 
 If you'd like an erotic representation of the Secret Handshake Protocol, you can see that <a href="assets/handshake-erotica.png">here</a> O.o
 
+## Office Hours
+
+Some users have started hosting office hours. These are times when they make themselves available to share their knowledge about scuttlebutt in a synchronous way. Generally this has taken the form of an open video call at a prearranged time. The calendar below is an experimental index of these hours.
+
+<iframe id="open-web-calendar"
+    style="background:url('https://raw.githubusercontent.com/niccokunzmann/open-web-calendar/master/static/img/loaders/circular-loader.gif') center center no-repeat;"
+    src="https://openwebcalendar.herokuapp.com/calendar.html?url=https%3A%2F%2Fcalendar.google.com%2Fcalendar%2Fical%2Fc_3bgcgq3l97aos2n1vhs4rtfl2s%2540group.calendar.google.com%2Fpublic%2Fbasic.ics"
+    sandbox="allow-scripts allow-same-origin allow-top-navigation"
+    allowTransparency="true" scrolling="no"
+    frameborder="0" height="600px" width="100%"></iframe>
+
+_If you would like to add your own office hours to this calendar, you can submit a PR adding a link to your .ics calendar to the iframe above. Please add your SSB ID in the description of each event._
