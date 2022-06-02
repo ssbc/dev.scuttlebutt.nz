@@ -108,4 +108,4 @@ Some users have started hosting office hours. These are times when they make the
     allowTransparency="true" scrolling="no"
     frameborder="0" height="600px" width="100%"></iframe>
 
-_If you would like to add your own office hours to this calendar, you can submit a PR adding a link to your .ics calendar to the iframe above. Please add your SSB ID in the description of each event._
+_If you would like to add your own office hours to this calendar, you can [submit a PR](https://github.com/ssbc/dev.scuttlebutt.nz/edit/main/docs/README.md) adding a link to your .ics calendar to the iframe above. Please add your SSB ID in the description of each event._
