@@ -403,7 +403,7 @@ More complex queries can also be composed using the `and` and `or` operators. Se
 
 ### History Stream
 
-Another way of returning messages from a single author is provided by the `create_history_stream()` method. This method takes a single SSB ID (public key) and returns all available messages authored by that identity.
+Another way of returning messages from a single author is provided by the `create_history_stream()` method. This method takes a single SSB ID (public key) and returns all available messages authored by that identity. The messages are returned in the form of KVTs (Key Value Timestamp) using the `SsbMessageKVT` type from golgi.
 
 Note: this method does not currently support optional parameters such as `reverse`, `seq` and `live`. These will likely be added in the future.
 
@@ -417,7 +417,7 @@ let history_stream = sbot_client.create_history_stream(ssb_id).await?;
 
 history_stream.for_each(|msg| {
     match msg {
-        Ok(val) => println!("msg value: {:?}", val),
+        Ok(kvt) => println!("kvt: {:?}", kvt),
         Err(e) => eprintln!("error: {}", e),
     }
 }).await;
