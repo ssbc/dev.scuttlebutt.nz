@@ -408,17 +408,48 @@ More complex queries can also be composed using the `and` and `or` operators. Se
 
 Another way of returning messages from a single author is provided by the `create_history_stream()` method. This method takes a single SSB ID (public key) and returns all available messages authored by that identity. The messages are returned in the form of KVTs (Key Value Timestamp) using the `SsbMessageKVT` type from golgi.
 
+The method expects a single argument in the form of the `CreateHistoryStream` `struct`. A new instance of the `struct` can be created by invoking the `new()` method and passing in a public key.
+
 Note: this method does not currently support optional parameters such as `reverse`, `seq` and `live`. These will likely be added in the future.
 
 ```rust
 // This trait is required when dealing with streams.
 use async_std::stream::StreamExt;
 
+use golgi::api::history_stream::CreateHistoryStream;
+
 let ssb_id = "@zqshk7o2Rpd/OaZ/MxH6xXONgonP1jH+edK9+GZb/NY=.ed25519".to_string();
 
+let args = CreateHistoryStream::new(ssb_id);
 let history_stream = sbot_client.create_history_stream(ssb_id).await?;
 
 history_stream.for_each(|msg| {
+    match msg {
+        Ok(kvt) => println!("kvt: {:?}", kvt),
+        Err(e) => eprintln!("error: {}", e),
+    }
+}).await;
+```
+
+### Threads
+
+When building out a social client with golgi it can be useful to retrieve all messages making up a thread. `go-ssb` exposes the `tangles.thread` RPC call which can be used for this purpose. The method, `tangles_thread()` in golgi, takes the key of the root message of a thread (ie. the first message of the thread) and returns the root message plus the replies to that message. Returned messages take the form of KVTs (Key Value Timestamp) using the `SsbMessageKVT` type. Like subset queries and history stream, the `tangles.thread` method returns a stream of messages.
+
+The method expects a single argument in the form of the `TanglesThread` `struct`. A new instance of the `struct` can be created by invoking the `new()` method and passing in a message key. Note the `keys_values()` method which ensures the resulting messages are returned in the correct format (ie. as KVTs).
+
+Note: this method does not currently support optional parameters such as `reverse`, `seq` and `live`. These will likely be added in the future.
+
+```rust
+use async_std::stream::StreamExt;
+
+use golgi::api::tangles::TanglesThread;
+
+let msg_key = "%Jp28h41JlvJh0KmuwoNXaANWS+9tOr21IdePLKdRz/M=.sha256".to_string();
+
+let args = TanglesThread::new(msg_key).keys_values(true, true);
+let tangles_thread = sbot_client.tangles_thread(args).await?;
+
+tangles_thread.for_each(|msg| {
     match msg {
         Ok(kvt) => println!("kvt: {:?}", kvt),
         Err(e) => eprintln!("error: {}", e),
