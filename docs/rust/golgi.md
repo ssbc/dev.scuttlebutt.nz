@@ -38,15 +38,18 @@ You may wish to keep the [golgi API documentation](https://docs.rs/golgi/0.1.0/g
 
 ### Sbot Connection
 
-Before we can communicate with the go-sbot, we first need to initialise a connection. We do this by calling the `init()` method on the `Sbot` `struct`. In this case, we are passing `None` for the `ip_port` parameter and `None` for the `net_id` parameter, resulting in a default of `127.0.0.1:8008` and the standard network key (aka. caps key) for the Scuttleverse:
+Before we can communicate with the go-sbot, we first need to initialise a connection. We do this by calling the `init()` method on the `Sbot` `struct`. Three parameters are expected: a keystore path, an IP address and port combination and a network key (aka. caps key). In this case, we are passing the default Patchwork secret keyfile path, `None` for the `ip_port` parameter and `None` for the `net_id` parameter, resulting in a default of `127.0.0.1:8008` and the standard network key for the Scuttleverse:
+
+The default `go-ssb` keystore path can be specified with `Keystore::GoSbot`. Alternatively, a custom path can be specified using `Keystore::CustomGoSbot(String)` or `Keystore::CustomPatchwork(String)` (where the `String` is the path to the `secret` file). 
 
 ```rust
-use golgi::{GolgiError, Sbot};
+use golgi::{GolgiError, Sbot, sbot::Keystore};
 
-let mut sbot_client = Sbot::init(None, None).await?;
+let mut sbot_client = Sbot::init(Keystore::Patchwork, None, None).await?;
 ```
 
 Notice the `await` call in the snippet above? This is required due to the asynchronous nature of golgi and its methods.
+
 
 ### Whoami
 
