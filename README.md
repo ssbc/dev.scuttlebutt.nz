@@ -1,5 +1,7 @@
 # Scuttlebutt Treasure Map for Developers
 
+[![pages-build-deployment](https://github.com/ssbc/dev.scuttlebutt.nz/actions/workflows/pages/pages-build-deployment/badge.svg?branch=main)](https://github.com/ssbc/dev.scuttlebutt.nz/actions/workflows/pages/pages-build-deployment)
+
 Meta documentation for the Scuttlebutt ecosystem.
 
 :book: **Hosted online at [dev.scuttlebutt.nz](https://dev.scuttlebutt.nz)** :book:
