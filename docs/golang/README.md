@@ -2,35 +2,34 @@
 
 ## Introduction
 
-Go-SSB implements most of the existing JavaScript functionality but is less modular, due to the typed nature of the language. Most of the code lives in a single repository: [go-ssb](https://github.com/cryptoscope/ssb) with a couple of packages split out, like `go-muxrpc` and `secretstream`.
+Go-SSB implements most of the existing JavaScript functionality but is less modular, due to the typed nature of the language. Most of the code lives in a single repository: [go-ssb](https://github.com/ssbc/go-ssb) with a couple of packages split out, like `go-muxrpc` and `secretstream`.
 
-The import path for the code is `go.cryptoscope.co/ssb`.
+The import path for the code is `github.com/ssbc/go-ssb`.
 
 If you are not familiar with the [Go programming language](https://golang.org), you can get started with learning using the official [guided tour](https://tour.golang.org/welcome/1).
 
-
 ## Packages Overview
 
-This section serves as a treasure map, outlining points of interest (important packages & folders) in the go-ssb [monorepo](https://github.com/cryptoscope/ssb/).
+This section serves as a treasure map, outlining points of interest (important packages & folders) in the go-ssb [monorepo](https://github.com/ssbc/go-ssb/).
 
-### [`cmd/`](https://github.com/cryptoscope/ssb/tree/master/cmd/)
+### [`cmd/`](https://github.com/ssbc/go-ssb/tree/master/cmd/)
 
 By coding convention, this contains the executable tools. Most importantly these two:
 
 * `go-sbot` which hosts the database and p2p server.
 * `sbotcli` a muxrpc client to do common tasks, like publishing a message or querying messages.
 
-### [`message/`](https://github.com/cryptoscope/ssb/tree/master/message/)
+### [`message/`](https://github.com/ssbc/go-ssb/tree/master/message/)
 
 Message contains all the code to create and verify messages.
 
 The current established format is
 
-* [message](https://pkg.go.dev/go.cryptoscope.co/ssb/message) - abstract verification and publish helpers
-* [message/legacy](https://pkg.go.dev/go.cryptoscope.co/ssb/message/legacy) - how to encode and verify [the current ssb messages](https://spec.scuttlebutt.nz/feed/messages.html)
+* [message](https://pkg.go.dev/github.com/ssbc/go-ssb/message) - abstract verification and publish helpers
+* [message/legacy](https://pkg.go.dev/github.com/ssbc/go-ssb/message/legacy) - how to encode and verify [the current ssb messages](https://spec.scuttlebutt.nz/feed/messages.html)
 * message/multimsg - encoding multiple kinds of messages to disk (see _Database Concept Overview_ below)
 
-### [`plugins/`](https://github.com/cryptoscope/ssb/tree/master/plugins/)
+### [`plugins/`](https://github.com/ssbc/go-ssb/tree/master/plugins/)
 
 Plugins supply muxrpc handlers to query the database in certain ways.
 They also implement other sub-protocols like ssb-blobs.
@@ -40,7 +39,7 @@ They also implement other sub-protocols like ssb-blobs.
 * control - connect to remote peers. (a naming hack, supplies `ctrl.connect` which should actually be `gossip.connect`)
 * status - return some information about the running server (number of connected peers, number of messages, index state)
 * publish - exposes `sbot.PublishLog.Publish(...)` as the muxrpc async call `publish`
-* get - very short module, just exposes [sbot.Get](https://pkg.go.dev/go.cryptoscope.co/ssb/sbot#Sbot.Get) over muxrpc
+* get - very short module, just exposes [sbot.Get](https://pkg.go.dev/github.com/ssbc/go-ssb/sbot#Sbot.Get) over muxrpc
 * rawread - a bunch of _read messages from the Receive Log_ functions likes (`createLogStream` and `messagesByType`)
 * legacyinvites -  follow-back sub protocol for new users. [ssb-invite](https://github.com/ssbc/ssb-invite)
 * peerinvites - the server part of the newer invite system: [ssb-peer-invites](https://github.com/ssbc/ssb-peer-invites)
@@ -49,25 +48,22 @@ They also implement other sub-protocols like ssb-blobs.
 * whoami - returns the public key reference of the peer you are talking to.
 * blobs - the muxrpc handlers for [ssb-blobs](https://github.com/ssbc/ssb-blobs). The storage and want-management is found in `blobstore`.
 
-
-[Plugins2](https://github.com/cryptoscope/ssb/tree/master/plugins2) is an attempt to unify the index generation and muxrpc handler code.
+[Plugins2](https://github.com/ssbc/go-ssb/tree/master/plugins2) is an attempt to unify the index generation and muxrpc handler code.
 
 * `tangles` categorizes messages by `root:%...` (v1 tangle) and also v2 form that is used in [private-groups](https://github.com/ssbc/private-group-spec/blob/master/group/add-member/README.md).
 * `bytype` looks at `type:string` and thus gives cheap access to the common message types (post, contact, about, etc.).
 * `names` implements the same muxrpc interface as [ssb-names](https://github.com/ssbc/ssb-names)
 
-
-
-### [`sbot/`](https://github.com/cryptoscope/ssb/tree/master/sbot/)
+### [`sbot/`](https://github.com/ssbc/go-ssb/tree/master/sbot/)
 
 Package `sbot` ties together network, repo and plugins like graph and blobs into a large server that offers data-access APIs and background replication. It's name dates back to a time where ssb-server was still called scuttlebot, in short: sbot.
 
-It offers a flexible [functional options API](https://pkg.go.dev/go.cryptoscope.co/ssb/sbot#Option) to tune the server as desired. This includes file locations, network and signing keypairs, local discovery behavior and plugin selection.
+It offers a flexible [functional options API](https://pkg.go.dev/ssbc/go-ssb/sbot#Option) to tune the server as desired. This includes file locations, network and signing keypairs, local discovery behavior and plugin selection.
 
 For instance, if you wanted a bot with local disvery enabled (by default it's off) and the replication database on a custom mountpoint, you would do this:
 
 ```go
-import "go.cryptoscope.co/ssb/sbot"
+import "github.com/ssbc/go-ssb"
 
 func ex() {
   thebot, err := sbot.Sbot(
@@ -87,8 +83,7 @@ func ex() {
 }
 ```
 
-
-### Triplets: [`repo/`](https://github.com/cryptoscope/ssb/tree/master/repo), [`indexes/`](https://github.com/cryptoscope/ssb/tree/master/indexes) and [`multilogs/`](https://github.com/cryptoscope/ssb/tree/master/multilogs)
+### Triplets: [`repo/`](https://github.com/ssbc/go-ssb/tree/master/repo), [`indexes/`](https://github.com/ssbc/go-ssb/tree/master/indexes) and [`multilogs/`](https://github.com/ssbc/go-ssb/tree/master/multilogs)
 
 * `repo/` - contains utility modules to open offset logs and create different kinds of indexes
 * `indexes/` - contains functions to create indexing  for `get(%ref) -> message`. Also contains a utility to open the contact trust graph using the `repo` and `graph` packages.
@@ -103,7 +98,7 @@ func ex() {
 * [invite](https://pkg.go.dev/go.cryptoscope.co/ssb/invite) - This package contains functions for parsing invite codes and dialing a pub as a guest to redeem a token. The muxrpc handlers and storage are found in `plugins/legacyinvite`.
 * [private](https://pkg.go.dev/go.cryptoscope.co/ssb/private) - utility functions to de- and encrypted messages. Maps to `box()` and `unbox()` in [ssb-keys](https://github.com/ssbc/ssb-keys).
 
-### On Testing: [`tests/`](https://github.com/cryptoscope/ssb/tree/master/tests/)
+### On Testing: [`tests/`](https://github.com/ssbc/go-ssb/tree/master/tests/)
 
 While most folders contain `_test.go` files where functionality is tested as unit tests, this folder
 contains sepcial code to run tests against the JavaScript implementation.
@@ -220,6 +215,7 @@ The first attempt we made stored an entry like `@publicKey:N -> ReceiveSeqM` (wh
 A newer approach is to store the set of receivelog sequences as a special kind of [Bitmap](https://en.wikipedia.org/wiki/Bitmap). (tl;dr: You can imagine these as a compressed array of integers.) This is advantageous not only because we only store one bitmap for all the messages in a set (like `by author:x` or `by type:y`) but also because it allows us to use them as compound indexes since they can be logically combined via boolean algebra (`x AND y` gives us the intersection, `x OR y` gives us the union) since they all map to the same messages in the receive log.
 
 ## Snippets
+
 Code examples and snippets for commonly useful tasks, especially when dealing with
 [metafeeds](https://github.com/ssb-ngi-pointer/ssb-meta-feeds-spec). The examples are
 incomplete snippets, aimed at helping get developers over conceptuals bumps by demonstrating
@@ -237,6 +233,7 @@ func TestAnExampleFunction (t *testing) {
 ```
 
 ### Register indexes (and then get them)
+
 ```go
 err = bot.MetaFeeds.RegisterIndex(mfId, mainFeedRef, "about")
 r.NoError(err)
@@ -257,6 +254,7 @@ checkSeq(contactIndex, int(margaret.SeqEmpty))
 ```
 
 ### Get a feed using a feedref
+
 ```go
 func getFeed(bot *sbot.Sbot, feedID refs.FeedRef) (margaret.Log, error) {
 	feed, err := bot.Users.Get(storedrefs.Feed(feedID))
@@ -270,6 +268,7 @@ func getFeed(bot *sbot.Sbot, feedID refs.FeedRef) (margaret.Log, error) {
 ```
 
 ### Debug print an entire log using its feedref
+
 ```go
 // error wrap - a helper util
 // string header will be prefixed before each message. typically it is the context we're generating errors within.
@@ -338,7 +337,7 @@ func printLog(bot *sbot.Sbot, feedid refs.FeedRef) error {
 
 ## Links
 
-Listed below are modules and packages that are not part of the [`go.cryptoscope.co/ssb`](https://github.com/cryptoscope/ssb/) monorepo:
+Listed below are modules and packages that are not part of the [`go.cryptoscope.co/ssb`](https://github.com/ssbc/go-ssb) monorepo:
 
 * The [secret-handshake](https://secret-handshake.club) key exchange is available as [secretstream](https://godoc.org/go.cryptoscope.co/secretstream)
 * RPC interoperability with JS through [go-muxprc](https://godoc.org/go.cryptoscope.co/muxrpc)
@@ -349,8 +348,11 @@ Listed below are modules and packages that are not part of the [`go.cryptoscope.
 
 ## Contact
 
-go-ssb and the surrounding modules were built by @cryptix with support from @keks.
-To reach us either post to the #go-ssb channel on the ssb mainnet or mention us individually:
+go-ssb and the surrounding modules were built by `@cryptix` with support from
+`@keks`. [SSBC](https://github.com/ssbc) now stewards the codebase. To reach us
+either post to the `#go-ssb` channel on the ssb mainnet or mention us
+individually:
 
 * cryptix: `@p13zSAiOpguI9nsawkGijsnMfWmFd5rlUNpzekEE+vI=.ed25519`
 * keks: `@YXkE3TikkY4GFMX3lzXUllRkNTbj5E+604AkaO1xbz8=.ed25519`
+* decentral1se `@i8OXtTYaK0PrF002pd4vpXmrlg98As7ZMaHGKoXixdM=.ed25519`
