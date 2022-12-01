@@ -14,13 +14,12 @@ More information:
 
 Jump straight in?
 
-Language               | In production
------------------------|:---:
-[Node.js](javascript/) | ✓ 
-[Go](golang/)          | ✓
-[Rust](rust/)          | ?
-[Python](python/)      | ?
-
+Language               | Status | In production
+-----------------------|:---: | :---:
+[Node.js](javascript/) | Stable | ✓ 
+[Go](golang/)          | Alpha | ✓
+[Rust](rust/)          | Pre-alpha | ?
+[Python](python/)      | Pre-alpha | ?
 
 ## Learn some core ideas
 
