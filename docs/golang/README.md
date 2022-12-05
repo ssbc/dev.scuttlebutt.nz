@@ -214,6 +214,10 @@ The first attempt we made stored an entry like `@publicKey:N -> ReceiveSeqM` (wh
 
 A newer approach is to store the set of receivelog sequences as a special kind of [Bitmap](https://en.wikipedia.org/wiki/Bitmap). (tl;dr: You can imagine these as a compressed array of integers.) This is advantageous not only because we only store one bitmap for all the messages in a set (like `by author:x` or `by type:y`) but also because it allows us to use them as compound indexes since they can be logically combined via boolean algebra (`x AND y` gives us the intersection, `x OR y` gives us the union) since they all map to the same messages in the receive log.
 
+## MUXRPC Endpoints
+
+See the [MUXRPC endpoint](./muxrpc.md) documentation for more.
+
 ## Snippets
 
 Code examples and snippets for commonly useful tasks, especially when dealing with
