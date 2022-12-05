@@ -1,5 +1,3 @@
-# MUXRPC Endpoints
-
 ## `["get"]`
 
 ### Specification

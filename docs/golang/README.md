@@ -216,7 +216,7 @@ A newer approach is to store the set of receivelog sequences as a special kind o
 
 ## MUXRPC Endpoints
 
-See the [MUXRPC endpoint](./muxrpc.md) documentation for more.
+[](muxrpc.md ':include:')
 
 ## Snippets
 
