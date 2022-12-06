@@ -1,19 +1,18 @@
-## `["get"]`
+## `["blobs", "get"]`
 
 ### Specification
 
-* Description: Get a single message from the local database by key
-* Endpoint: `["get"]`
-* RPC Type: `async`
-* Arguments: Must be an array containing exactly one object.
+* Description: Streams the contents of the file.
+* Endpoint: `["blobs", "get"]`
+* RPC Type: `source`
+* Arguments: Must be an array containing strings (blob references).
 * Options: N/A
 
 ### Arguments
 
 | Name | Type | Required | Description |
 | ---- | ---- | -------- | ----------- |
-| id | string | yes | Message reference (`%...sha256`) |
-| private | bool | no | Is a private message |
+| N/A | array | yes | Blob reference (`&...sha256`) |
 
 ### Options
 
@@ -23,14 +22,9 @@ N/A
 
 ```json
 {
-  "name": ["get"],
+  "name": ["blobs", "get"],
   "type": "async",
-  "args": [
-    {
-      "id": "%R07yiTZwvlquWkDMFQC9VktEzxUxo/psuIjYwQiVVms=.sha256",
-      "private": false
-    }
-  ]
+  "args": ["&grLTZFapgHZHXRYh1zgz2bTuDelottGZSfogKauo/fk=.sha256"]
 }
 ```
 
@@ -39,53 +33,36 @@ N/A
 #### `sbotcli`
 
 ```
-sbotcli get %R07yiTZwvlquWkDMFQC9VktEzxUxo/psuIjYwQiVVms=.sha256
+sbotcli blobs get "&grLTZFapgHZHXRYh1zgz2bTuDelottGZSfogKauo/fk=.sha256" > blob_file
 ```
 
-## `["partialReplication", "getSubset"]`
+## `["blobs", "createWants"]`
 
 ### Specification
 
-* Description: Fetch subsets of messages from the log
-* Endpoint: `["partialReplication", "getSubset"]`
+* Description: Try to get a blob from other peers. 
+* Endpoint: `["blobs", "createWants"]`
 * RPC Type: `source`
-* Arguments: An array containing exactly one object.
-* Options: An array containing exactly one object.
+* Arguments: Must be an array containing exactly one object.
+* Options: N/A
 
 ### Arguments
 
-> At least one argument is required.
-
 | Name | Type | Required | Description |
 | ---- | ---- | -------- | ----------- |
-| type | json | no | Filter by type of message (e.g. `{ op: "type", string: "post"}`) |
-| author | json | no | Filter by author of feed (e.g. `{ op: "author", string: "<@...ed25519>"}`)|
-| and | json | no | Use logical AND on subset query (e.g. `{"op":"and","args":[{"op":...`)|
-| or | json | no | Use logical OR on subset query (e.g. `{"op":"or","args":[{"op":...`)|
+| N/A | array | yes | Blob reference (`&...sha256`) |
 
 ### Options
 
-| Name | Type | Required | Description |
-| ---- | ---- | -------- | ----------- |
-| limit | int | no | The maximum number of messages to fetch |
-| desc | bool | no | Sort in descending order |
-| keys | bool | no | Whether the data event should contain keys. If set to true and values set to false then data events will simply be keys, rather than objects with a key property |
+N/A
 
 ### Request
 
 ```json
 {
-  "name": ["partialReplication", "getSubset"],
-  "type": "source",
-  "args": [
-    {
-      "op": "type",
-      "string": "post"
-    },
-    {
-      "limit": 3
-    }
-  ]
+  "name": ["blobs", "createWants"],
+  "type": "async",
+  "args": ["&grLTZFapgHZHXRYh1zgz2bTuDelottGZSfogKauo/fk=.sha256"]
 }
 ```
 
@@ -94,7 +71,7 @@ sbotcli get %R07yiTZwvlquWkDMFQC9VktEzxUxo/psuIjYwQiVVms=.sha256
 #### `sbotcli`
 
 ```
-sbotcli subset --limit 3 '{"op":"type", "string": "post"}'
+sbotcli blobs want "&hB2vsBGwqPAfkBQ5IQGIrLfHXzytmExYC3iJ6FC08F8=.sha256"
 ```
 
 ## `["createFeedStream"]`
@@ -275,6 +252,46 @@ N/A
 sbotcli friends hops --dist 0 @HEqy940T6uB+T+d9Jaa58aNfRzLx9eRWqkZljBmnkmk=.ed25519
 ```
 
+## `["friends", "isBlocking"]`
+
+### Specification
+
+* Description: List all peers blocked by the given feed ID.
+* Endpoint: `["friends", "isBlocking"]`
+* RPC Type: `source`
+* Arguments: Must be an array containing exactly one object.
+* Options: N/A
+
+### Arguments
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| who | string | yes | Feed reference (`@...ed25519`) |
+
+### Options
+
+N/A
+
+### Request
+
+```json
+{
+  "name": ["friends", "isBlocking"],
+  "type": "source",
+  "args": [{
+    "who": "@fGWzOR/FXU3Acbn4P65CpMewJIynFyqocvfLAyJdDno=.ed25519"
+  }]
+}
+```
+
+### Examples
+
+#### `sbotcli`
+
+```
+sbotcli friends blocks @fGWzOR/FXU3Acbn4P65CpMewJIynFyqocvfLAyJdDno=.ed25519
+```
+
 ## `["friends", "isFollowing"]`
 
 ### Specification
@@ -319,13 +336,13 @@ sbotcli friends isFollowing \
   @mfY4X9Gob0w2oVfFv+CpX56PfL0GZ2RNQkc51SJlMvc=.ed25519
 ```
 
-## `["friends", "isBlocking"]`
+## `["get"]`
 
 ### Specification
 
-* Description: List all peers blocked by the given feed ID.
-* Endpoint: `["friends", "isBlocking"]`
-* RPC Type: `source`
+* Description: Get a single message from the local database by key
+* Endpoint: `["get"]`
+* RPC Type: `async`
 * Arguments: Must be an array containing exactly one object.
 * Options: N/A
 
@@ -333,7 +350,8 @@ sbotcli friends isFollowing \
 
 | Name | Type | Required | Description |
 | ---- | ---- | -------- | ----------- |
-| who | string | yes | Feed reference (`@...ed25519`) |
+| id | string | yes | Message reference (`%...sha256`) |
+| private | bool | no | Is a private message |
 
 ### Options
 
@@ -343,49 +361,14 @@ N/A
 
 ```json
 {
-  "name": ["friends", "isBlocking"],
-  "type": "source",
-  "args": [{
-    "who": "@fGWzOR/FXU3Acbn4P65CpMewJIynFyqocvfLAyJdDno=.ed25519"
-  }]
-}
-```
-
-### Examples
-
-#### `sbotcli`
-
-```
-sbotcli friends blocks @fGWzOR/FXU3Acbn4P65CpMewJIynFyqocvfLAyJdDno=.ed25519
-```
-
-## `["blobs", "get"]`
-
-### Specification
-
-* Description: Streams the contents of the file.
-* Endpoint: `["blobs", "get"]`
-* RPC Type: `source`
-* Arguments: Must be an array containing strings (blob references).
-* Options: N/A
-
-### Arguments
-
-| Name | Type | Required | Description |
-| ---- | ---- | -------- | ----------- |
-| N/A | array | yes | Blob reference (`&...sha256`) |
-
-### Options
-
-N/A
-
-### Request
-
-```json
-{
-  "name": ["blobs", "get"],
+  "name": ["get"],
   "type": "async",
-  "args": ["&grLTZFapgHZHXRYh1zgz2bTuDelottGZSfogKauo/fk=.sha256"]
+  "args": [
+    {
+      "id": "%R07yiTZwvlquWkDMFQC9VktEzxUxo/psuIjYwQiVVms=.sha256",
+      "private": false
+    }
+  ]
 }
 ```
 
@@ -394,7 +377,7 @@ N/A
 #### `sbotcli`
 
 ```
-sbotcli blobs get "&grLTZFapgHZHXRYh1zgz2bTuDelottGZSfogKauo/fk=.sha256" > blob_file
+sbotcli get %R07yiTZwvlquWkDMFQC9VktEzxUxo/psuIjYwQiVVms=.sha256
 ```
 
 ## `["invite", "create"]`
@@ -579,34 +562,50 @@ N/A
 
 N/A
 
-## `["private", "publish"]`
+## `["partialReplication", "getSubset"]`
 
 ### Specification
 
-* Description: Publish a message privately.
-* Endpoint: `["private", "publish"]`
-* RPC Type: `async`
-* Arguments: Must be an array.
-* Options: N/A
+* Description: Fetch subsets of messages from the log
+* Endpoint: `["partialReplication", "getSubset"]`
+* RPC Type: `source`
+* Arguments: An array containing exactly one object.
+* Options: An array containing exactly one object.
 
 ### Arguments
 
+> At least one argument is required.
+
 | Name | Type | Required | Description |
 | ---- | ---- | -------- | ----------- |
-| N/A | string | yes | Content of the message |
-| N/A | string | yes | Recipients of the mssage |
+| type | json | no | Filter by type of message (e.g. `{ op: "type", string: "post"}`) |
+| author | json | no | Filter by author of feed (e.g. `{ op: "author", string: "<@...ed25519>"}`)|
+| and | json | no | Use logical AND on subset query (e.g. `{"op":"and","args":[{"op":...`)|
+| or | json | no | Use logical OR on subset query (e.g. `{"op":"or","args":[{"op":...`)|
 
 ### Options
 
-N/A
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| limit | int | no | The maximum number of messages to fetch |
+| desc | bool | no | Sort in descending order |
+| keys | bool | no | Whether the data event should contain keys. If set to true and values set to false then data events will simply be keys, rather than objects with a key property |
 
 ### Request
 
 ```json
 {
-  "name": ["private", "publish"],
-  "type": "async",
-  "args": ["foo", ["@r6Lzb9OT3/dlVYNDTABmsF+HWnhBsA1twZaobYhjVUY=.ed25519"]]
+  "name": ["partialReplication", "getSubset"],
+  "type": "source",
+  "args": [
+    {
+      "op": "type",
+      "string": "post"
+    },
+    {
+      "limit": 3
+    }
+  ]
 }
 ```
 
@@ -614,7 +613,9 @@ N/A
 
 #### `sbotcli`
 
-N/A
+```
+sbotcli subset --limit 3 '{"op":"type", "string": "post"}'
+```
 
 ## `["publish"]`
 
@@ -656,6 +657,41 @@ N/A
 ```
 sbotcli publish post "Gophers create a network of tunnel systems that provide protection."
 ```
+
+## `["private", "publish"]`
+
+### Specification
+
+* Description: Publish a message privately.
+* Endpoint: `["private", "publish"]`
+* RPC Type: `async`
+* Arguments: Must be an array.
+* Options: N/A
+
+### Arguments
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| N/A | string | yes | Content of the message |
+| N/A | string | yes | Recipients of the mssage |
+
+### Options
+
+N/A
+
+### Request
+
+```json
+{
+  "name": ["private", "publish"],
+  "type": "async",
+  "args": ["foo", ["@r6Lzb9OT3/dlVYNDTABmsF+HWnhBsA1twZaobYhjVUY=.ed25519"]]
+}
+```
+
+### Examples
+
+N/A
 
 ## `["tangles", "thread"]`
 
@@ -742,40 +778,3 @@ N/A
 sbotcli call whoami
 ```
 
-## `["blobs", "createWants"]`
-
-### Specification
-
-* Description: Try to get a blob from other peers. 
-* Endpoint: `["blobs", "createWants"]`
-* RPC Type: `source`
-* Arguments: Must be an array containing exactly one object.
-* Options: N/A
-
-### Arguments
-
-| Name | Type | Required | Description |
-| ---- | ---- | -------- | ----------- |
-| N/A | array | yes | Blob reference (`&...sha256`) |
-
-### Options
-
-N/A
-
-### Request
-
-```json
-{
-  "name": ["blobs", "createWants"],
-  "type": "async",
-  "args": ["&grLTZFapgHZHXRYh1zgz2bTuDelottGZSfogKauo/fk=.sha256"]
-}
-```
-
-### Examples
-
-#### `sbotcli`
-
-```
-sbotcli blobs want "&hB2vsBGwqPAfkBQ5IQGIrLfHXzytmExYC3iJ6FC08F8=.sha256"
-```

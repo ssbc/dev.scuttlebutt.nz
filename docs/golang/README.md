@@ -218,6 +218,10 @@ A newer approach is to store the set of receivelog sequences as a special kind o
 
 [](muxrpc.md ':include')
 
+## MUXRPC Support Table
+
+[](muxrpc-support-table.md ':include')
+
 ## Snippets
 
 Code examples and snippets for commonly useful tasks, especially when dealing with
