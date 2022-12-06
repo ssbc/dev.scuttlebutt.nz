@@ -216,6 +216,11 @@ A newer approach is to store the set of receivelog sequences as a special kind o
 
 ## MUXRPC Endpoints
 
+> **WARNING**: This section of the documentation is a work-in-progress. The
+> following listing of MUXRPC endpoints is still incomplete. A less detailed
+> but more complete listing of endpoints and their support is shown further
+> below.
+
 [](muxrpc.md ':include')
 
 ## MUXRPC Support Table
