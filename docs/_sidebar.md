@@ -10,5 +10,6 @@
   - [Rust](rust/)
   - [Python](python/)
 
+- [Web presence](#web-presence)
 
-- [**scuttlebutt.nz** ⧉](https://scuttlebutt.nz)
+- [Contributing](#contributing)

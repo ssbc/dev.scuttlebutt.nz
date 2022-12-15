@@ -95,3 +95,27 @@ In Scuttlebutt this is done through
 You can read about this in depth in the [Scuttlebutt Protocol Guide](https://ssbc.github.io/scuttlebutt-protocol-guide/#keys-and-identities).
 
 If you'd like an erotic representation of the Secret Handshake Protocol, you can see that <a href="assets/handshake-erotica.png">here</a> O.o
+
+## Web presence
+
+> **WARNING**: We understand that it might be a bit confusing to navigate the
+> SSB web presence at the moment. It is indeed spread over several websites and
+> quite often not up-to-date. We're working on it. Feel free to [dive in and
+> help us out](/#contributing)! Also, if there is a link missing below, please
+> free to add it.
+
+- [dev.scuttlebutt.nz](https://dev.scuttlebutt.nz) ([sources](https://github.com/ssbc/dev.scuttlebutt.nz))
+- [handbook.scuttlebutt.nz](https://handbook.scuttlebutt.nz) ([sources](https://github.com/ssbc/handbook.scuttlebutt.nz))
+- [scuttlebot.io](https://scuttlebot.io) ([sources](https://git.scuttlebot.io/%25hg8wG6xCDKVWoPYCS84HY7Adrd6JEUYoM23%2BGwn24I4%3D.sha256) (`git-ssb`))
+- [scuttlebutt.eu](https://scuttlebutt.eu) ([sources](https://github.com/scuttlebutt-eu/scuttlebutt-eu.github.io))
+- [scuttlebutt.nz](https://scuttlebutt.nz) ([sources](https://gitlab.com/ssbc/scuttlebutt.nz))
+- [ssbc.github.io](https://ssbc.github.io) ([sources](https://github.com/ssbc/ssbc.github.io))
+
+## Contributing
+
+> If you're already on SSB and want to help onboard new development butts,
+> please add yourself to the list below.
+
+The simplest way is to [join SSB](https://scuttlebutt.nz/get-started) and message the following folks:
+
+* decentral1se `@i8OXtTYaK0PrF002pd4vpXmrlg98As7ZMaHGKoXixdM=.ed25519`
