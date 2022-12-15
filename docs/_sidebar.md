@@ -2,7 +2,7 @@
 - [Learn some core ideas](/#learn-some-core-ideas)
   - [Feeds](/#feeds)
   - [Replication](/#replication)
-  - [Protocol Guide ⧉](https://ssbc.github.io/scuttlebutt-protocol-guide/)
+  - [Protocol Guide](/#protocol-guide)
 
 - [Implementations](#implementations)
   - [Javascript](javascript/)
@@ -10,5 +10,6 @@
   - [Rust](rust/)
   - [Python](python/)
 
+- [Web presence](#web-presence)
 
-- [**scuttlebutt.nz** ⧉](https://scuttlebutt.nz)
+- [Contributing](#contributing)

@@ -89,22 +89,32 @@ In Scuttlebutt this is done through
 - **Secret Handshake (SHS)** - an authenticated key exchange protocol (like TLS).
 - **MuxRPC** - a communication protocol (like HTTP).
 
-
 ### Protocol Guide
 
 You can read about this in depth in the [Scuttlebutt Protocol Guide](https://ssbc.github.io/scuttlebutt-protocol-guide/#keys-and-identities).
 
 If you'd like an erotic representation of the Secret Handshake Protocol, you can see that <a href="assets/handshake-erotica.png">here</a> O.o
 
-## Office Hours
+## Web presence
 
-Some users have started hosting office hours. These are times when they make themselves available to share their knowledge about scuttlebutt in a synchronous way. Generally this has taken the form of an open video call at a prearranged time. The calendar below is an experimental index of these hours.
+> **WARNING**: We understand that it might be a bit confusing to navigate the
+> SSB web presence at the moment. It is indeed spread over several websites and
+> quite often not up-to-date. We're working on it. Feel free to [dive in and
+> help us out](/#contributing)! Also, if there is a link missing below, please
+> free to add it.
 
-<iframe id="open-web-calendar"
-    style="background:url('https://raw.githubusercontent.com/niccokunzmann/open-web-calendar/master/static/img/loaders/circular-loader.gif') center center no-repeat;"
-    src="https://openwebcalendar.herokuapp.com/calendar.html?url=https%3A%2F%2Fcalendar.google.com%2Fcalendar%2Fical%2Fc_3bgcgq3l97aos2n1vhs4rtfl2s%2540group.calendar.google.com%2Fpublic%2Fbasic.ics"
-    sandbox="allow-scripts allow-same-origin allow-top-navigation"
-    allowTransparency="true" scrolling="no"
-    frameborder="0" height="600px" width="100%"></iframe>
+- [dev.scuttlebutt.nz](https://dev.scuttlebutt.nz) ([sources](https://github.com/ssbc/dev.scuttlebutt.nz))
+- [handbook.scuttlebutt.nz](https://handbook.scuttlebutt.nz) ([sources](https://github.com/ssbc/handbook.scuttlebutt.nz))
+- [scuttlebot.io](https://scuttlebot.io) ([sources](https://git.scuttlebot.io/%25hg8wG6xCDKVWoPYCS84HY7Adrd6JEUYoM23%2BGwn24I4%3D.sha256) (`git-ssb`))
+- [scuttlebutt.eu](https://scuttlebutt.eu) ([sources](https://github.com/scuttlebutt-eu/scuttlebutt-eu.github.io))
+- [scuttlebutt.nz](https://scuttlebutt.nz) ([sources](https://gitlab.com/ssbc/scuttlebutt.nz))
+- [ssbc.github.io](https://ssbc.github.io) ([sources](https://github.com/ssbc/ssbc.github.io))
 
-_If you would like to add your own office hours to this calendar, you can [submit a PR](https://github.com/ssbc/dev.scuttlebutt.nz/edit/main/docs/README.md) adding a link to your .ics calendar to the iframe above. Please add your SSB ID in the description of each event._
+## Contributing
+
+> If you're already on SSB and want to help onboard new development butts,
+> please add yourself to the list below.
+
+The simplest way is to [join SSB](https://scuttlebutt.nz/get-started) and message the following folks:
+
+* decentral1se `@i8OXtTYaK0PrF002pd4vpXmrlg98As7ZMaHGKoXixdM=.ed25519`
