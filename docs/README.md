@@ -89,7 +89,6 @@ In Scuttlebutt this is done through
 - **Secret Handshake (SHS)** - an authenticated key exchange protocol (like TLS).
 - **MuxRPC** - a communication protocol (like HTTP).
 
-
 ### Protocol Guide
 
 You can read about this in depth in the [Scuttlebutt Protocol Guide](https://ssbc.github.io/scuttlebutt-protocol-guide/#keys-and-identities).
