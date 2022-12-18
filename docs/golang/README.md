@@ -1,5 +1,13 @@
 # go-ssb
 
+> **NOTICE**: this page focuses on the
+> [`go-ssb`](https://github.com/ssbc/go-ssb/) implementation but there is
+> another called [`scuttlego`](https://github.com/planetary-social/scuttlego).
+> This implementation has been startly recently, so doesn't feature heavily
+> here but you can find more information on the [repository
+> README](https://github.com/planetary-social/scuttlego#readme). The community
+> is working on a more unified documentation platform.
+
 ## Introduction
 
 Go-SSB implements most of the existing JavaScript functionality but is less modular, due to the typed nature of the language. Most of the code lives in a single repository: [go-ssb](https://github.com/ssbc/go-ssb) with a couple of packages split out, like `go-muxrpc` and `secretstream`.
