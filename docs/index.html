@@ -166,8 +166,11 @@
     <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-rust.min.js"></script>
 
     <!-- mermaid diagrams -->
-    <script src="//unpkg.com/mermaid/dist/mermaid.js"></script>
-    <script src="//unpkg.com/docsify-mermaid@latest/dist/docsify-mermaid.js"> 
-    <script>mermaid.initialize({ startOnLoad: true });</script>
+    <script type="module">
+      import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs";
+      mermaid.initialize({ startOnLoad: true });
+      window.mermaid = mermaid;
+    </script>
+    <script src="//unpkg.com/docsify-mermaid@2.0.0/dist/docsify-mermaid.js"></script>
   </body>
 </html>
